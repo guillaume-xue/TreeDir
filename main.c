@@ -21,13 +21,14 @@ typedef struct noeud noeud;
 
 typedef struct liste_noeud liste_noeud;
 
-noeud creer_racine(){
+noeud * creer_racine(){
     noeud * res = malloc(sizeof (noeud));
     res->est_dossier = true;
     res->nom[0] = '\0';
     res->pere = res;
     res->racine = res;
     res->fils = NULL;
+    return res;
 }
 
 void print_fils(liste_noeud *f){
