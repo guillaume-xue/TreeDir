@@ -85,6 +85,14 @@ noeud * cd_chem(noeud * n, const char * c){
     return res;
 }
 
+noeud * cd_racine(noeud * n){
+    return n->racine;
+}
+
+noeud * cd_pere(noeud * n){
+    return n->pere;
+}
+
 int main() {
 
     return 0;
