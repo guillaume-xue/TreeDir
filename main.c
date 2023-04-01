@@ -77,6 +77,7 @@ noeud * cd_chem(noeud * n, const char * c){
     char * tmp;
     int i = 0, j;
     while (c[i] != '\0'){
+        assert(res->fils != NULL);
         j = i;
         i = get_next_slash(j+1, c);
         tmp = get_next_name_noeud(j, i, c);
@@ -92,6 +93,7 @@ noeud * cd_racine(noeud * n){
 noeud * cd_pere(noeud * n){
     return n->pere;
 }
+
 
 int main() {
 
