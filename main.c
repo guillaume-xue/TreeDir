@@ -94,6 +94,15 @@ noeud * cd_pere(noeud * n){
     return n->pere;
 }
 
+void pwd(noeud * n){
+    if (n != n->racine){
+        pwd(n->pere);
+        printf("/%s",n->nom);
+    }
+}
+
+
+
 
 int main() {
 
