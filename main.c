@@ -121,30 +121,26 @@ liste_noeud * creer_liste_noeud(noeud * n, const char * c, bool b){
     return res;
 }
 
-void mkdir(noeud * n, const char * c){
-    assert(c[0] != '\0' && strlen(c) < 100);
+void creer_fils(noeud * n, const char * c, bool b){
     if(n->fils == NULL){
-        n->fils = creer_liste_noeud(n, c, true);
+        n->fils = creer_liste_noeud(n, c, b);
     }else{
         liste_noeud * tmp = n->fils;
         while (tmp != NULL){
             tmp = tmp->succ;
         }
-        tmp->succ = creer_liste_noeud(n, c, true);
+        tmp->succ = creer_liste_noeud(n, c, b);
     }
+}
+
+void mkdir(noeud * n, const char * c){
+    assert(c[0] != '\0' && strlen(c) < 100);
+    creer_fils(n, c, true);
 }
 
 void touch(noeud * n, const char * c){
     assert(c[0] != '\0' && strlen(c) < 100);
-    if(n->fils == NULL){
-        n->fils = creer_liste_noeud(n, c, false);
-    }else{
-        liste_noeud * tmp = n->fils;
-        while (tmp != NULL){
-            tmp = tmp->succ;
-        }
-        tmp->succ = creer_liste_noeud(n, c, false);
-    }
+    creer_fils(n, c, false);
 }
 
 int main() {
