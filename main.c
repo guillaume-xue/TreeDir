@@ -102,9 +102,9 @@ void pwd(noeud * n){
 }
 
 
-noeud * creer_noeud(noeud * n, const char * c){
+noeud * creer_noeud(noeud * n, const char * c, bool b){
     noeud * res = malloc(sizeof (noeud));
-    res->est_dossier = true;
+    res->est_dossier = b;
     for (int i = 0; c[i] != '\0'; ++i) {
         res->nom[i] = c[i];
     }
@@ -114,9 +114,9 @@ noeud * creer_noeud(noeud * n, const char * c){
     return res;
 }
 
-liste_noeud * creer_liste_noeud(noeud * n, const char * c){
+liste_noeud * creer_liste_noeud(noeud * n, const char * c, bool b){
     liste_noeud * res = malloc(sizeof (liste_noeud));
-    res->no = creer_noeud(n, c);
+    res->no = creer_noeud(n, c, b);
     res->succ = NULL;
     return res;
 }
@@ -124,15 +124,27 @@ liste_noeud * creer_liste_noeud(noeud * n, const char * c){
 void mkdir(noeud * n, const char * c){
     assert(c[0] != '\0' && strlen(c) < 100);
     if(n->fils == NULL){
-        n->fils = creer_liste_noeud(n, c);
+        n->fils = creer_liste_noeud(n, c, true);
     }else{
         liste_noeud * tmp = n->fils;
         while (tmp != NULL){
             tmp = tmp->succ;
         }
-        tmp->succ = creer_liste_noeud(n, c);
+        tmp->succ = creer_liste_noeud(n, c, true);
     }
+}
 
+void touch(noeud * n, const char * c){
+    assert(c[0] != '\0' && strlen(c) < 100);
+    if(n->fils == NULL){
+        n->fils = creer_liste_noeud(n, c, false);
+    }else{
+        liste_noeud * tmp = n->fils;
+        while (tmp != NULL){
+            tmp = tmp->succ;
+        }
+        tmp->succ = creer_liste_noeud(n, c, false);
+    }
 }
 
 int main() {
