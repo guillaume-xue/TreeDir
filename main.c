@@ -26,7 +26,7 @@ typedef struct liste_noeud liste_noeud;
 noeud * creer_racine(){
     noeud * res = malloc(sizeof (noeud));
     res->est_dossier = true;
-    res->nom[0] = '\0';
+    res->nom[100] = '\0';
     res->pere = res;
     res->racine = res;
     res->fils = NULL;
@@ -102,7 +102,38 @@ void pwd(noeud * n){
 }
 
 
+noeud * creer_noeud(noeud * n, const char * c){
+    noeud * res = malloc(sizeof (noeud));
+    res->est_dossier = true;
+    for (int i = 0; c[i] != '\0'; ++i) {
+        res->nom[i] = c[i];
+    }
+    res->pere = n;
+    res->racine = n->racine;
+    res->fils = NULL;
+    return res;
+}
 
+liste_noeud * creer_liste_noeud(noeud * n, const char * c){
+    liste_noeud * res = malloc(sizeof (liste_noeud));
+    res->no = creer_noeud(n, c);
+    res->succ = NULL;
+    return res;
+}
+
+void mkdir(noeud * n, const char * c){
+    assert(c[0] != '\0' && strlen(c) < 100);
+    if(n->fils == NULL){
+        n->fils = creer_liste_noeud(n, c);
+    }else{
+        liste_noeud * tmp = n->fils;
+        while (tmp != NULL){
+            tmp = tmp->succ;
+        }
+        tmp->succ = creer_liste_noeud(n, c);
+    }
+
+}
 
 int main() {
 
