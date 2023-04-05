@@ -143,6 +143,30 @@ void touch(noeud * n, const char * c){
     creer_fils(n, c, false);
 }
 
+void rm_no(noeud * n);
+
+void rm_succ(liste_noeud * n){
+    if(n->succ != NULL){
+        rm_succ(n->succ);
+    }
+    rm_no(n->no);
+    free(n);
+}
+
+void rm_no(noeud * n){
+    if(n->fils != NULL){
+        rm_succ(n->fils);
+    }
+    free(n);
+}
+
+
+void rm(noeud * n, const char * c){
+    noeud * tmp = cd_chem(n, c);
+    rm_no(tmp);
+    tmp->fils = NULL;
+}
+
 int main() {
 
     return 0;
