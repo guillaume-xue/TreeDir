@@ -23,6 +23,8 @@ typedef struct noeud noeud;
 
 typedef struct liste_noeud liste_noeud;
 
+// Base
+
 noeud * creer_racine(){
     noeud * res = malloc(sizeof (noeud));
     res->est_dossier = true;
@@ -32,6 +34,8 @@ noeud * creer_racine(){
     res->fils = NULL;
     return res;
 }
+
+// fonction ls
 
 void print_fils(liste_noeud *f){
     printf("‰s\n",f->no->nom);
@@ -45,6 +49,8 @@ void ls(noeud *n){
         print_fils(n->fils);
     }
 }
+
+// fonction cd_chem
 
 int get_next_slash(int pos, const char * c){
     int i = pos;
@@ -63,7 +69,6 @@ char * substring(int first, int last, const char * c){
 }
 
 noeud * find_noeud(liste_noeud * l, const char * c){
-    assert(l == NULL);
     if (strcmp(l->no->nom, c)){
         return l->no;
     }else{
@@ -72,12 +77,10 @@ noeud * find_noeud(liste_noeud * l, const char * c){
 }
 
 noeud * cd_chem(noeud * n, const char * c){
-    assert(c[0] == '/');
     noeud * res = n;
     char * tmp;
     int i = 0, j;
     while (c[i] != '\0'){
-        assert(res->fils != NULL);
         j = i;
         i = get_next_slash(j+1, c);
         tmp = substring(j, i, c);
@@ -86,13 +89,19 @@ noeud * cd_chem(noeud * n, const char * c){
     return res;
 }
 
+// fonction cd
+
 noeud * cd_racine(noeud * n){
     return n->racine;
 }
 
+// fonction cd ..
+
 noeud * cd_pere(noeud * n){
     return n->pere;
 }
+
+// fonction pwd
 
 void pwd(noeud * n){
     if (n != n->racine){
@@ -101,15 +110,16 @@ void pwd(noeud * n){
     }
 }
 
+// fonction mkdir nom et touch nom
 
-noeud * creer_noeud(noeud * n, const char * c, bool b){
+noeud * creer_noeud(noeud * pere, const char * c, bool b){
     noeud * res = malloc(sizeof (noeud));
     res->est_dossier = b;
     for (int i = 0; c[i] != '\0'; ++i) {
         res->nom[i] = c[i];
     }
-    res->pere = n;
-    res->racine = n->racine;
+    res->pere = pere;
+    res->racine = pere->racine;
     res->fils = NULL;
     return res;
 }
@@ -121,27 +131,27 @@ liste_noeud * creer_liste_noeud(noeud * n, const char * c, bool b){
     return res;
 }
 
-void creer_fils(noeud * n, const char * c, bool b){
-    if(n->fils == NULL){
-        n->fils = creer_liste_noeud(n, c, b);
+void creer_fils(noeud * pere, const char * c, bool b){
+    if(pere->fils == NULL){
+        pere->fils = creer_liste_noeud(pere, c, b);
     }else{
-        liste_noeud * tmp = n->fils;
-        while (tmp != NULL){
+        liste_noeud * tmp = pere->fils;
+        while (tmp->succ != NULL){
             tmp = tmp->succ;
         }
-        tmp->succ = creer_liste_noeud(n, c, b);
+        tmp->succ = creer_liste_noeud(pere, c, b);
     }
 }
 
 void mkdir(noeud * n, const char * c){
-    assert(c[0] != '\0' && strlen(c) < 100);
     creer_fils(n, c, true);
 }
 
 void touch(noeud * n, const char * c){
-    assert(c[0] != '\0' && strlen(c) < 100);
     creer_fils(n, c, false);
 }
+
+// fonction rm chem
 
 void rm_no(noeud * n);
 
@@ -167,6 +177,8 @@ void rm(noeud * n, const char * c){
     tmp->fils = NULL;
 }
 
+// fonction cp chem1 chem2
+
 int get_last_slash(const char * c){
     int i = strlen(c);
     while (c[i] != '/'){
@@ -184,7 +196,52 @@ void cp(noeud * n, const char * c1, const char * c2){
     memcpy(res->fils, copy->fils, sizeof(liste_noeud));
 }
 
+// fonction mv chem1 chem2
+
+void mv(noeud * n, const char * c1, const char * c2){
+    cp(n, c1, c2);
+    rm(n, c1);
+}
+
+// fonction print
+
+void print_list(liste_noeud * l){
+    liste_noeud * tmp = l;
+    while (tmp->succ != NULL){
+        printf(" %s (%s),", tmp->no->nom, tmp->no->est_dossier ? "D" : "F");
+        tmp = tmp->succ;
+    }
+    printf(" %s (%s)", tmp->no->nom, tmp->no->est_dossier ? "D" : "F");
+}
+
+int nb_fils(liste_noeud * l){
+    int i = 1;
+    liste_noeud * tmp = l;
+    while (tmp->succ != NULL){
+        i++;
+    }
+    return i;
+}
+
+void print(noeud * n){
+    char * nom = n->nom;
+    char * est_dossier =  n->est_dossier ? "D" : "F";
+    char * pere = n == n->pere ? "/" : n->pere->nom;
+    int nb = nb_fils(n->fils);
+    if (n->pere == n){
+        printf("Noeud / (%s), %d :",est_dossier, nb);
+    }else{
+        printf("Noeud %s (%s), pere : %s, %d", nom, est_dossier, pere, nb);
+    }
+    print_list(n->fils);
+}
+
 int main() {
 
+    noeud * n = creer_racine();
+    mkdir(n,"Cours");
+    mkdir(n,"Td");
+
+    print(n);
     return 0;
 }
