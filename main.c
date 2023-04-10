@@ -62,29 +62,35 @@ int get_next_slash(int pos, const char * c){
 
 char * substring(int first, int last, const char * c){
     char * tmp[strlen(c)];
-    for(int i=first; i<=last; i++){
-        tmp[i] = (char *) c[i];
+    int j = 0;
+    for(int i = first; i <= last; i++){
+        tmp[j] = (char *) c[i];
+        j++;
     }
+    for (int i = 0; tmp[i] != '\0'; i++){
+        printf("%c", tmp[i]);
+    }
+    printf("%d %d %s %s\n",first, last, c, tmp);
     return tmp;
 }
 
 noeud * find_noeud(liste_noeud * l, const char * c){
-    if (strcmp(l->no->nom, c)){
-        return l->no;
-    }else{
-        find_noeud(l->succ, c);
+    liste_noeud * tmp = l;
+    while (tmp->succ != NULL){
+        if (strcmp(tmp->no->nom, c) == 0){
+            return tmp->no;
+        }
+        tmp = tmp->succ;
     }
 }
 
 noeud * cd_chem(noeud * n, const char * c){
     noeud * res = n;
-    char * tmp;
-    int i = 0, j;
-    while (c[i] != '\0'){
-        j = i;
-        i = get_next_slash(j+1, c);
-        tmp = substring(j, i, c);
-        res = find_noeud(res->fils,tmp);
+    const char * sep = "/";
+    char * strTok = strtok(c, sep);
+    while (strTok != NULL){
+        res = find_noeud(res->fils,strTok);
+        strTok = strtok(NULL, sep);
     }
     return res;
 }
@@ -124,15 +130,15 @@ noeud * creer_noeud(noeud * pere, const char * c, bool b){
     return res;
 }
 
-liste_noeud * creer_liste_noeud(noeud * n, const char * c, bool b){
+liste_noeud * creer_liste_noeud(noeud * pere, const char * c, bool b){
     liste_noeud * res = malloc(sizeof (liste_noeud));
-    res->no = creer_noeud(n, c, b);
+    res->no = creer_noeud(pere, c, b);
     res->succ = NULL;
     return res;
 }
 
-void creer_fils(noeud * pere, const char * c, bool b){
-    if(pere->fils == NULL){
+struct liste_noeud * creer_fils(noeud * pere, const char * c, bool b){
+    if (pere->fils == NULL){
         pere->fils = creer_liste_noeud(pere, c, b);
     }else{
         liste_noeud * tmp = pere->fils;
@@ -212,6 +218,7 @@ void print_list(liste_noeud * l){
         tmp = tmp->succ;
     }
     printf(" %s (%s)", tmp->no->nom, tmp->no->est_dossier ? "D" : "F");
+
 }
 
 int nb_fils(liste_noeud * l){
@@ -219,6 +226,7 @@ int nb_fils(liste_noeud * l){
     liste_noeud * tmp = l;
     while (tmp->succ != NULL){
         i++;
+        tmp = tmp->succ;
     }
     return i;
 }
@@ -226,12 +234,12 @@ int nb_fils(liste_noeud * l){
 void print(noeud * n){
     char * nom = n->nom;
     char * est_dossier =  n->est_dossier ? "D" : "F";
-    char * pere = n == n->pere ? "/" : n->pere->nom;
+    char * pere = strcmp("", n->pere) ? "/" : n->pere->nom;
     int nb = nb_fils(n->fils);
     if (n->pere == n){
-        printf("Noeud / (%s), %d :",est_dossier, nb);
+        printf("Noeud / (%s), %d fils :", est_dossier, nb);
     }else{
-        printf("Noeud %s (%s), pere : %s, %d", nom, est_dossier, pere, nb);
+        printf("Noeud %s (%s), pere : %s, %d fils :", nom, est_dossier, pere, nb);
     }
     print_list(n->fils);
 }
@@ -239,9 +247,19 @@ void print(noeud * n){
 int main() {
 
     noeud * n = creer_racine();
+
     mkdir(n,"Cours");
     mkdir(n,"Td");
+    touch(n, "edt");
 
+    n = cd_chem(n, "Cours");
+    mkdir(n, "ProjetC");
+    mkdir(n, "Anglais");
+    n = cd_pere(n);
+    n = cd_chem(n, "Td");
+    touch(n, "td1");
+    touch(n, "td2");
+    n = cd_pere(n);
     print(n);
     return 0;
 }
