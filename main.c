@@ -28,7 +28,7 @@ typedef struct liste_noeud liste_noeud;
 noeud * creer_racine(){
     noeud * res = malloc(sizeof (noeud));
     res->est_dossier = true;
-    res->nom[100] = '\0';
+    res->nom[0] = '\0';
     res->pere = res;
     res->racine = res;
     res->fils = NULL;
@@ -67,10 +67,6 @@ char * substring(int first, int last, const char * c){
         tmp[j] = (char *) c[i];
         j++;
     }
-    for (int i = 0; tmp[i] != '\0'; i++){
-        printf("%c", tmp[i]);
-    }
-    printf("%d %d %s %s\n",first, last, c, tmp);
     return tmp;
 }
 
@@ -212,16 +208,18 @@ void mv(noeud * n, const char * c1, const char * c2){
 // fonction print
 
 void print_list(liste_noeud * l){
-    liste_noeud * tmp = l;
-    while (tmp->succ != NULL){
-        printf(" %s (%s),", tmp->no->nom, tmp->no->est_dossier ? "D" : "F");
-        tmp = tmp->succ;
+    if (l != NULL){
+        liste_noeud * tmp = l;
+        while (tmp->succ != NULL){
+            printf(" %s (%s),", tmp->no->nom, tmp->no->est_dossier ? "D" : "F");
+            tmp = tmp->succ;
+        }
+        printf(" %s (%s)", tmp->no->nom, tmp->no->est_dossier ? "D" : "F");
     }
-    printf(" %s (%s)", tmp->no->nom, tmp->no->est_dossier ? "D" : "F");
-
 }
 
 int nb_fils(liste_noeud * l){
+    if (l == NULL) return 0;
     int i = 1;
     liste_noeud * tmp = l;
     while (tmp->succ != NULL){
@@ -231,17 +229,35 @@ int nb_fils(liste_noeud * l){
     return i;
 }
 
-void print(noeud * n){
+void print_noeud(noeud * n){
     char * nom = n->nom;
     char * est_dossier =  n->est_dossier ? "D" : "F";
-    char * pere = strcmp("", n->pere) ? "/" : n->pere->nom;
+    char * pere = (n->pere->nom[0] == '\0') ? "/" : n->pere->nom;
     int nb = nb_fils(n->fils);
     if (n->pere == n){
-        printf("Noeud / (%s), %d fils :", est_dossier, nb);
+        printf("Noeud / (%s), %d fils ", est_dossier, nb);
     }else{
-        printf("Noeud %s (%s), pere : %s, %d fils :", nom, est_dossier, pere, nb);
+        printf("Noeud %s (%s), pere : %s, %d fils ", nom, est_dossier, pere, nb);
     }
+    if(nb != 0) printf(":");
     print_list(n->fils);
+    printf("\n");
+}
+
+void print(noeud * n);
+
+void print_succ(liste_noeud * n){
+    liste_noeud * tmp = n;
+    while (tmp != NULL){
+        print_noeud(tmp->no);
+        print(tmp->no->fils->no);
+        tmp = tmp->succ;
+    }
+}
+
+void print(noeud * n){
+    print_noeud(n);
+    print_succ(n->fils);
 }
 
 int main() {
@@ -260,6 +276,8 @@ int main() {
     touch(n, "td1");
     touch(n, "td2");
     n = cd_pere(n);
-    print(n);
+    n = cd_chem(n, "Cours");
+    n = cd_chem(n, "ProjetC");
+    print(n->racine);
     return 0;
 }
