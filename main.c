@@ -54,9 +54,9 @@ int get_next_slash(int pos, const char * c){
     return i;
 }
 
-char * get_next_name_noeud(int fist, int last, const char * c){
+char * substring(int first, int last, const char * c){
     char * tmp[strlen(c)];
-    for(int i=fist; i<=last; i++){
+    for(int i=first; i<=last; i++){
         tmp[i] = (char *) c[i];
     }
     return tmp;
@@ -80,7 +80,7 @@ noeud * cd_chem(noeud * n, const char * c){
         assert(res->fils != NULL);
         j = i;
         i = get_next_slash(j+1, c);
-        tmp = get_next_name_noeud(j, i, c);
+        tmp = substring(j, i, c);
         res = find_noeud(res->fils,tmp);
     }
     return res;
@@ -165,6 +165,23 @@ void rm(noeud * n, const char * c){
     noeud * tmp = cd_chem(n, c);
     rm_no(tmp);
     tmp->fils = NULL;
+}
+
+int get_last_slash(const char * c){
+    int i = strlen(c);
+    while (c[i] != '/'){
+        i++;
+    }
+    return i;
+}
+
+void cp(noeud * n, const char * c1, const char * c2){
+    noeud * copy = cd_chem(n, c1);
+    noeud * res = cd_chem(n, substring(0, get_last_slash(c2),c2));
+    mkdir(res, substring(get_last_slash(c2),strlen(c2),c2));
+    res = cd_chem(n, c2);
+    res->fils = malloc(sizeof (liste_noeud));
+    memcpy(res->fils, copy->fils, sizeof(liste_noeud));
 }
 
 int main() {
