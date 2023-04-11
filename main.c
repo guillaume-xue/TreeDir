@@ -246,18 +246,18 @@ void print_noeud(noeud * n){
 
 void print(noeud * n);
 
-void print_succ(liste_noeud * n){
-    liste_noeud * tmp = n;
-    while (tmp != NULL){
-        print_noeud(tmp->no);
-        print(tmp->no->fils->no);
-        tmp = tmp->succ;
+void print_succ(liste_noeud * l){
+    if (l->succ != NULL){
+        print_succ(l->succ);
     }
+    print(l->no);
 }
 
 void print(noeud * n){
     print_noeud(n);
-    print_succ(n->fils);
+    if(n->fils != NULL){
+        print_succ(n->fils);
+    }
 }
 
 int main() {
