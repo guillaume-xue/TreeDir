@@ -247,10 +247,10 @@ void print_noeud(noeud * n){
 void print(noeud * n);
 
 void print_succ(liste_noeud * l){
+    print(l->no);
     if (l->succ != NULL){
         print_succ(l->succ);
     }
-    print(l->no);
 }
 
 void print(noeud * n){
