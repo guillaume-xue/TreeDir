@@ -207,26 +207,16 @@ void mv(noeud * n, const char * c1, const char * c2){
 
 // fonction print
 
-void print_list(liste_noeud * l){
-    if (l != NULL){
-        liste_noeud * tmp = l;
-        while (tmp->succ != NULL){
-            printf(" %s (%s),", tmp->no->nom, tmp->no->est_dossier ? "D" : "F");
-            tmp = tmp->succ;
-        }
-        printf(" %s (%s)", tmp->no->nom, tmp->no->est_dossier ? "D" : "F");
-    }
-}
-
 int nb_fils(liste_noeud * l){
     if (l == NULL) return 0;
-    int i = 1;
-    liste_noeud * tmp = l;
-    while (tmp->succ != NULL){
-        i++;
-        tmp = tmp->succ;
+    return 1 + nb_fils(l->succ);
+}
+
+void print_list(liste_noeud * l){
+    if (l != NULL){
+        printf(" %s (%s),", l->no->nom, l->no->est_dossier ? "D" : "F");
+        print_list(l->succ);
     }
-    return i;
 }
 
 void print_noeud(noeud * n){
@@ -234,7 +224,7 @@ void print_noeud(noeud * n){
     char * est_dossier =  n->est_dossier ? "D" : "F";
     char * pere = (n->pere->nom[0] == '\0') ? "/" : n->pere->nom;
     int nb = nb_fils(n->fils);
-    if (n->pere == n){
+    if (n->nom[0] == '\0'){
         printf("Noeud / (%s), %d fils ", est_dossier, nb);
     }else{
         printf("Noeud %s (%s), pere : %s, %d fils ", nom, est_dossier, pere, nb);
@@ -248,16 +238,12 @@ void print(noeud * n);
 
 void print_succ(liste_noeud * l){
     print(l->no);
-    if (l->succ != NULL){
-        print_succ(l->succ);
-    }
+    if (l->succ != NULL) print_succ(l->succ);
 }
 
 void print(noeud * n){
     print_noeud(n);
-    if(n->fils != NULL){
-        print_succ(n->fils);
-    }
+    if(n->fils != NULL) print_succ(n->fils);
 }
 
 int main() {
@@ -278,6 +264,7 @@ int main() {
     n = cd_pere(n);
     n = cd_chem(n, "Cours");
     n = cd_chem(n, "ProjetC");
+
     print(n->racine);
     return 0;
 }
