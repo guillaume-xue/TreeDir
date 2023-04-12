@@ -114,7 +114,8 @@ int nb_fils(liste_noeud * l){
 
 void print_list(liste_noeud * l){
     if (l != NULL){
-        printf(" %s (%s),", l->no->nom, l->no->est_dossier ? "D" : "F");
+        printf(" %s (%s)", l->no->nom, l->no->est_dossier ? "D" : "F");
+        if(l->succ != NULL) printf(",");
         print_list(l->succ);
     }
 }
