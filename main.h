@@ -18,6 +18,7 @@ typedef struct noeud noeud;
 typedef struct liste_noeud liste_noeud;
 
 // fonction ls
+
 void print_fils(liste_noeud *f){
     printf("‰s\n",f->no->nom);
     if(f != NULL){
@@ -27,27 +28,9 @@ void print_fils(liste_noeud *f){
 
 // fonction cd_chem
 
-int get_next_slash(int pos, const char * c){
-    int i = pos;
-    while (c[i] != '/' && c[i] !='\0'){
-        i++;
-    }
-    return i;
-}
-
-char * substring(int first, int last, const char * c){
-    char * tmp[strlen(c)];
-    int j = 0;
-    for(int i = first; i <= last; i++){
-        tmp[j] = (char *) c[i];
-        j++;
-    }
-    return tmp;
-}
-
 noeud * find_noeud(liste_noeud * l, const char * c){
     liste_noeud * tmp = l;
-    while (tmp->succ != NULL){
+    while (tmp != NULL){
         if (strcmp(tmp->no->nom, c) == 0){
             return tmp->no;
         }
@@ -113,9 +96,15 @@ void rm_no(noeud * n){
 int get_last_slash(const char * c){
     int i = strlen(c);
     while (c[i] != '/'){
-        i++;
+        i--;
     }
     return i;
+}
+
+char *substr(char *src,int pos,int len) {
+    char *dest = (char *) malloc(len+1);
+    strncat(dest,src+pos,len);
+    return dest;
 }
 
 int nb_fils(liste_noeud * l){
@@ -130,7 +119,14 @@ void print_list(liste_noeud * l){
     }
 }
 
-void print_noeud(noeud * n){
+void print(noeud * n);
+
+void print_succ(liste_noeud * l){
+    print(l->no);
+    if (l->succ != NULL) print_succ(l->succ);
+}
+
+void print_no(noeud * n){
     char * nom = n->nom;
     char * est_dossier =  n->est_dossier ? "D" : "F";
     char * pere = (n->pere->nom[0] == '\0') ? "/" : n->pere->nom;
@@ -145,9 +141,3 @@ void print_noeud(noeud * n){
     printf("\n");
 }
 
-void print(noeud * n);
-
-void print_succ(liste_noeud * l){
-    print(l->no);
-    if (l->succ != NULL) print_succ(l->succ);
-}
