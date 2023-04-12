@@ -74,7 +74,7 @@ void touch(noeud * n, const char * c){
 // fonction rm chem
 
 void rm(noeud * n, const char * c){
-    noeud * tmp = cd_chem(n, c);
+    noeud * tmp = cd_chem(n, substr(c,0, get_last_slash(c)));
     rm_no(tmp);
     tmp->fils = NULL;
 }
@@ -133,6 +133,7 @@ int main() {
     n = cd_racine(n);
     touch(n,"edt");
     cp(n,"Cours","/Td");
+    rm(n,"/Td/ProjetC");
     print(n->racine);
     /*
     noeud * n = creer_racine();

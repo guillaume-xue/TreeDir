@@ -38,7 +38,6 @@ noeud * find_noeud(liste_noeud * l, const char * c){
     }
 }
 
-
 // fonction mkdir nom et touch nom
 
 noeud * creer_noeud(noeud * pere, const char * c, bool b){
@@ -76,19 +75,19 @@ struct liste_noeud * creer_fils(noeud * pere, const char * c, bool b){
 
 void rm_no(noeud * n);
 
-void rm_succ(liste_noeud * n){
-    if(n->succ != NULL){
-        rm_succ(n->succ);
+void rm_succ(liste_noeud * l){
+    if(l != NULL){
+        rm_succ(l->succ);
+        rm_no(l->no);
+        free(l->no);
     }
-    rm_no(n->no);
-    free(n);
+    free(l);
 }
 
 void rm_no(noeud * n){
     if(n->fils != NULL){
         rm_succ(n->fils);
     }
-    free(n);
 }
 
 // fonction cp chem1 chem2
