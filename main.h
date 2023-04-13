@@ -28,14 +28,6 @@ void print_fils(liste_noeud *f){
 
 // fonction cd_chem
 
-bool str_equals(const char * c1, const char * c2){
-    if (strlen(c1) != strlen(c2)) return false;
-    for (int i = 0; c1[i] != '\0'; ++i) {
-        if(c1[i] != c2[i]) return false;
-    }
-    return true;
-}
-
 noeud * find_noeud(liste_noeud * l, char c[]){
     if (strcmp(l->no->nom, c) == 0){
         return l->no;

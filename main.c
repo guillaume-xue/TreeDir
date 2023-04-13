@@ -87,8 +87,8 @@ void cp(noeud * n, char c1[], char c2[]){
     noeud * tmp = cd_racine(n);
     noeud * cp = cd_chem(tmp,c1);
     noeud * cl = cd_chem(tmp, substr(c2,0, get_last_slash(c2)));
-    mkdir(cl, substr(c2, get_last_slash(c2)+1,strlen(c2)));
-    cl = cd_chem(cl, substr(c2, get_last_slash(c2)+1,strlen(c2)));
+    mkdir(cl, substr(c2, get_last_slash(c2) + 1, strlen(c2)));
+    cl = cd_chem(cl, substr(c2, get_last_slash(c2) + 1,strlen(c2)));
     cp_no(cl, cp);
 }
 
@@ -116,16 +116,20 @@ int main() {
     n = cd_racine(n);
     touch(n, "edt");
     cp(n,"Cours", "/Td");
-    char c[] = "/Td/ProjetC";
-    rm(n,c);
-    char t[] = "/Td/Anglais";
-    rm(n,t);
+    char s1[] = "/Td/ProjetC";
+    rm(n, s1);
+    char s2[] = "/Td/Anglais";
+    rm(n, s2);
     n = cd_chem(n,"Td");
     mkdir(n,"td1");
     mkdir(n,"td2");
-    char s[] = "/Cours/ProjetC";
-    char s2[] = "/CopieProjetC";
-    cp(n, s, s2);
+    char s3[] = "/Cours/ProjetC";
+    char s4[] = "/CopieProjetC";
+    cp(n, s3, s4);
+    n = cd_racine(n);
+    char s5[] = "/Td";
+    char s6[] = "/Cours/Td";
+    mv(n,s5, s6);
     print(n->racine);
 
 
