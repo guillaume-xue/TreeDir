@@ -133,7 +133,7 @@ void cp_no(noeud * n1, noeud * n2){
 
 int get_last_slash(char c[]){
     int i = strlen(c);
-    while (c[i] != '/'){
+    while (c[i] != '/' && i != 0){
         i--;
     }
     return i;

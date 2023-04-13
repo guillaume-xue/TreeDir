@@ -84,8 +84,9 @@ void rm(noeud * n, char c[]){
 // fonction cp chem1 chem2
 
 void cp(noeud * n, char c1[], char c2[]){
-    noeud * cp = cd_chem(n,c1);
-    noeud * cl = cd_chem(n, substr(c2,0, get_last_slash(c2)));
+    noeud * tmp = cd_racine(n);
+    noeud * cp = cd_chem(tmp,c1);
+    noeud * cl = cd_chem(tmp, substr(c2,0, get_last_slash(c2)));
     mkdir(cl, substr(c2, get_last_slash(c2)+1,strlen(c2)));
     cl = cd_chem(cl, substr(c2, get_last_slash(c2)+1,strlen(c2)));
     cp_no(cl, cp);
@@ -122,6 +123,9 @@ int main() {
     n = cd_chem(n,"Td");
     mkdir(n,"td1");
     mkdir(n,"td2");
+    char s[] = "/Cours/ProjetC";
+    char s2[] = "/CopieProjetC";
+    cp(n, s, s2);
     print(n->racine);
 
 
