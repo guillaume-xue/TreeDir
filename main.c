@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <string.h>
 #include "main.h"
 
@@ -27,11 +26,11 @@ void ls(noeud *n){
 
 // fonction cd_chem
 
-noeud * cd_chem(noeud * n, const char * c){
+noeud * cd_chem(noeud * n, char c[]){
     noeud * res = n;
     const char * sep = "/";
     char * strTok = strtok(c, sep);
-    while (strTok != NULL){
+    while (strTok != NULL && res->fils != NULL){
         res = find_noeud(res->fils,strTok);
         strTok = strtok(NULL, sep);
     }
@@ -61,47 +60,30 @@ void pwd(noeud * n){
 
 // fonction mkdir
 
-void mkdir(noeud * n, const char * c){
+void mkdir(noeud * n, char c[]){
     creer_fils(n, c, true);
 }
 
 // fonction touch
 
-void touch(noeud * n, const char * c){
+void touch(noeud * n, char c[]){
     creer_fils(n, c, false);
 }
 
 // fonction rm chem
 
-void rm(noeud * n, const char * c){
-    noeud * tmp = cd_chem(n, substr(c,0, get_last_slash(c)));
-    rm_no(tmp);
-    tmp->fils = NULL;
+
+void rm(noeud * n, char c[]){
+    char tmp[strlen(c)];
+    strcpy(tmp,c);
+    noeud * rm = cd_chem(n, tmp);
+    rm_cut(rm->pere, substr(c, get_last_slash(c) + 1, strlen(c)));
+    rm_no(rm);
 }
 
 // fonction cp chem1 chem2
 
-void cp_no(noeud * n1, noeud * n2);
-
-void cp_succ(noeud * n, liste_noeud * l){
-    if (l->no->est_dossier){
-        mkdir(n,l->no->nom);
-    }else{
-        touch(n,l->no->nom);
-    }
-    if(l->succ != NULL){
-        cp_succ(n,l->succ);
-        cp_no(n->fils->no,l->no);
-    }
-}
-
-void cp_no(noeud * n1, noeud * n2){
-    if(n2->fils != NULL){
-        cp_succ(n1, n2->fils);
-    }
-}
-
-void cp(noeud * n, const char * c1, const char * c2){
+void cp(noeud * n, char c1[], char c2[]){
     noeud * cp = cd_chem(n,c1);
     noeud * cl = cd_chem(n, substr(c2,0, get_last_slash(c2)));
     mkdir(cl, substr(c2, get_last_slash(c2)+1,strlen(c2)));
@@ -128,13 +110,21 @@ int main() {
     noeud * n = creer_racine();
     mkdir(n, "Cours");
     n = cd_chem(n,"Cours");
-    mkdir(n,"ProjetC");
-    mkdir(n,"Anglais");
+    mkdir(n, "ProjetC");
+    mkdir(n, "Anglais");
     n = cd_racine(n);
-    touch(n,"edt");
-    cp(n,"Cours","/Td");
-    rm(n,"/Td/ProjetC");
+    touch(n, "edt");
+    cp(n,"Cours", "/Td");
+    char c[] = "/Td/ProjetC";
+    rm(n,c);
+    char t[] = "/Td/Anglais";
+    rm(n,t);
+    n = cd_chem(n,"Td");
+    mkdir(n,"td1");
+    mkdir(n,"td2");
     print(n->racine);
+
+
     /*
     noeud * n = creer_racine();
 
