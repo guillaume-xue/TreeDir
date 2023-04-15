@@ -1,50 +1,51 @@
 #include "Treedir.h"
 
 int main(){
-    racine = creer_racine();
-    mkdir(racine, "Cours");
-    racine = cd_chem(racine, "Cours");
-    mkdir(racine, "ProjetC");
-    mkdir(racine, "Anglais");
-    racine = cd_racine(racine);
-    touch(racine, "edt");
-    cp(racine, "Cours", "/Td");
+
+    n = creer_racine();
+    mkdir(n, "Cours");
+    n = cd_chem(n, "Cours");
+    mkdir(n, "ProjetC");
+    mkdir(n, "Anglais");
+    n = cd_racine(n);
+    touch(n, "edt");
+    cp(n, "Cours", "/Td");
     char s1[] = "/Td/ProjetC";
-    rm(racine, s1);
+    rm(n, s1);
     char s2[] = "/Td/Anglais";
-    rm(racine, s2);
-    racine = cd_chem(racine, "Td");
-    mkdir(racine, "td1");
-    mkdir(racine, "td2");
+    rm(n, s2);
+    n = cd_chem(n, "Td");
+    mkdir(n, "td1");
+    mkdir(n, "td2");
     char s3[] = "/Cours/ProjetC";
     char s4[] = "/CopieProjetC";
-    cp(racine, s3, s4);
-    racine = cd_racine(racine);
+    cp(n, s3, s4);
+    n = cd_racine(n);
     char s5[] = "/Td";
     char s6[] = "/Cours/Td";
-    mv(racine, s5, s6);
-    print(racine->racine);
+    mv(n, s5, s6);
+    print(n->racine);
 
 
     /*
-    noeud * racine = creer_racine();
+    noeud * n = creer_racine();
 
-    mkdir(racine,"Cours");
-    mkdir(racine,"Td");
-    touch(racine, "edt");
+    mkdir(n,"Cours");
+    mkdir(n,"Td");
+    touch(n, "edt");
 
-    racine = cd_chem(racine, "Cours");
-    mkdir(racine, "ProjetC");
-    mkdir(racine, "Anglais");
-    racine = cd_pere(racine);
-    racine = cd_chem(racine, "Td");
-    touch(racine, "td1");
-    touch(racine, "td2");
-    racine = cd_pere(racine);
-    racine = cd_chem(racine, "Cours");
-    racine = cd_chem(racine, "ProjetC");
+    n = cd_chem(n, "Cours");
+    mkdir(n, "ProjetC");
+    mkdir(n, "Anglais");
+    n = cd_pere(n);
+    n = cd_chem(n, "Td");
+    touch(n, "td1");
+    touch(n, "td2");
+    n = cd_pere(n);
+    n = cd_chem(n, "Cours");
+    n = cd_chem(n, "ProjetC");
 
-    print(racine->racine);
+    print(n->n);
      */
     return 0;
 }
