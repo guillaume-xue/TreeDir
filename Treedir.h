@@ -21,7 +21,7 @@ typedef struct noeud noeud;
 
 typedef struct liste_noeud liste_noeud;
 
-extern noeud racine;
+extern noeud * racine;
 
 extern noeud * creer_racine();
 extern void ls(noeud *n);
