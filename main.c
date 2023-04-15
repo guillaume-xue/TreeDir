@@ -2,7 +2,7 @@
 
 int main(){
 
-    n = creer_racine();
+    noeud * n = creer_racine();
     mkdir(n, "Cours");
     n = cd_chem(n, "Cours");
     mkdir(n, "ProjetC");

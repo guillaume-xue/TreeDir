@@ -2,7 +2,18 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include "Treedir.h"
+
+// Test validité du chemin
+
+bool test_validite_chemin(char c[]){
+    //Verifie que la chaine n'est pas vide, ne commence pas par "/" et ne termine pas par "/"
+    if(c[0] == '\0' || c[0] == "/" || c[(int)(sizeof(c)/sizeof(c[0]))-1] == "/"){
+        return false;
+    }
+    return true;
+}
 
 // Base
 
@@ -20,7 +31,7 @@ noeud * creer_racine(){
 
 void print_fils(liste_noeud *f){
     printf("‰s\n",f->no->nom);
-    if(f != NULL){
+    if(f->succ != NULL){
         print_fils(f->succ);
     }
 }
@@ -41,12 +52,28 @@ noeud * find_noeud(liste_noeud * l, char c[]){
 }
 
 noeud * cd_chem(noeud * n, char c[]){
-    noeud * res = n;
+    assert(test_validite_chemin(c) && "Chemin avec un format non autorise.");
+    noeud * res = NULL;
     const char * sep = "/";
-    char * strTok = strtok(c, sep);
+    char * strTok = NULL;
+    if(c[0] == "/"){
+        res = n->racine;
+        strTok = strtok(c+1, sep);
+    }else{
+        res = n;
+        strTok = strtok(c, sep);
+    }
     while (strTok != NULL && res->fils != NULL){
         res = find_noeud(res->fils,strTok);
         strTok = strtok(NULL, sep);
+    }
+    if(strTok != NULL && res->fils == NULL){
+        printf("Erreur : Le chemin indique n existe pas.");
+        return NULL;
+    }
+    if(strTok == NULL && !res->est_dossier){
+        printf("Erreur : Le chemin indique n est pas un dossier.");
+        return NULL;
     }
     return res;
 }
@@ -65,11 +92,33 @@ noeud * cd_pere(noeud * n){
 
 // fonction pwd
 
-void pwd(noeud * n){
+void pwd(noeud * n){// affiche juste "/" si c'est la racine
+    if(n == n->racine){
+        print("/");
+    }else{
+        pwd_fils(n);
+    }
+}
+
+void pwd_fils(noeud * n){
     if (n != n->racine){
-        pwd(n->pere);
+        pwd_fils(n->pere);
         printf("/%s",n->nom);
     }
+}
+
+// Verifie s'il y'a un duplicata de nom
+
+bool verif_existe_dupli(noeud * n, char c[]){
+    liste_noeud * tmp = n->fils;
+    while (tmp != NULL)
+    {
+        if(strcmp(tmp->no->nom, c) == 0){
+            return true;
+        }
+        tmp = tmp->succ;
+    }
+    return false;
 }
 
 // fonction mkdir et touch
@@ -97,6 +146,7 @@ struct liste_noeud * creer_fils(noeud * pere, char c[], bool b){
     if (pere->fils == NULL){
         pere->fils = creer_liste_noeud(pere, c, b);
     }else{
+        assert(!verif_existe_dupli(pere, c) && "Il est existe deja un dossier ou fichier avec ce nom.");
         liste_noeud * tmp = pere->fils;
         while (tmp->succ != NULL){
             tmp = tmp->succ;
@@ -166,8 +216,15 @@ void rm(noeud * n, char c[]){
     char tmp[strlen(c)];
     strcpy(tmp,c);
     noeud * rm = cd_chem(n, tmp);
+    assert(rm != NULL);
     rm_cut(rm->pere, substr(c, get_last_slash(c) + 1, strlen(c)));
     rm_no(rm);
+}
+
+// Verifie si deux arborescence ses superpose
+
+bool verif_arbo(noeud * n_a_supp, noeud * n_actuel){
+    
 }
 
 // fonction cp chem1 chem2
