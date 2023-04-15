@@ -1,21 +1,20 @@
-struct noeud;
-struct liste_noeud;
-struct noeud {
-    bool est_dossier;
-    char nom[100];
-    struct noeud *pere;
-    struct noeud *racine;
-    struct liste_noeud *fils;
-};
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+#include "Treedir.h"
 
-struct liste_noeud {
-    struct noeud *no;
-    struct liste_noeud *succ;
-};
+// Base
 
-typedef struct noeud noeud;
-
-typedef struct liste_noeud liste_noeud;
+noeud * creer_racine(){
+    noeud * res = malloc(sizeof (noeud));
+    res->est_dossier = true;
+    res->nom[0] = '\0';
+    res->pere = res;
+    res->racine = res;
+    res->fils = NULL;
+    return res;
+}
 
 // fonction ls
 
@@ -23,6 +22,12 @@ void print_fils(liste_noeud *f){
     printf("‰s\n",f->no->nom);
     if(f != NULL){
         print_fils(f->succ);
+    }
+}
+
+void ls(noeud *n){
+    if(n->fils != NULL){
+        print_fils(n->fils);
     }
 }
 
@@ -35,7 +40,39 @@ noeud * find_noeud(liste_noeud * l, char c[]){
     if (l != NULL) return find_noeud(l->succ, c);
 }
 
-// fonction mkdir nom et touch nom
+noeud * cd_chem(noeud * n, char c[]){
+    noeud * res = n;
+    const char * sep = "/";
+    char * strTok = strtok(c, sep);
+    while (strTok != NULL && res->fils != NULL){
+        res = find_noeud(res->fils,strTok);
+        strTok = strtok(NULL, sep);
+    }
+    return res;
+}
+
+// fonction cd
+
+noeud * cd_racine(noeud * n){
+    return n->racine;
+}
+
+// fonction cd ..
+
+noeud * cd_pere(noeud * n){
+    return n->pere;
+}
+
+// fonction pwd
+
+void pwd(noeud * n){
+    if (n != n->racine){
+        pwd(n->pere);
+        printf("/%s",n->nom);
+    }
+}
+
+// fonction mkdir et touch
 
 noeud * creer_noeud(noeud * pere, char c[], bool b){
     noeud * res = malloc(sizeof (noeud));
@@ -68,7 +105,33 @@ struct liste_noeud * creer_fils(noeud * pere, char c[], bool b){
     }
 }
 
+// fonction mkdir
+
+void mkdir(noeud * n, char c[]){
+    creer_fils(n, c, true);
+}
+
+// fonction touch
+
+void touch(noeud * n, char c[]){
+    creer_fils(n, c, false);
+}
+
 // fonction rm chem
+
+char *substr(char src[],int pos,int len) {
+    char *dest = (char *) malloc(len+1);
+    strncat(dest,src+pos,len);
+    return dest;
+}
+
+int get_last_slash(char c[]){
+    int i = strlen(c);
+    while (c[i] != '/' && i != 0){
+        i--;
+    }
+    return i;
+}
 
 void rm_cut(noeud * n, char c[]){
     if(strcmp(n->fils->no->nom, c) == 0) {
@@ -99,10 +162,16 @@ void rm_no(noeud * n){
     free(n);
 }
 
+void rm(noeud * n, char c[]){
+    char tmp[strlen(c)];
+    strcpy(tmp,c);
+    noeud * rm = cd_chem(n, tmp);
+    rm_cut(rm->pere, substr(c, get_last_slash(c) + 1, strlen(c)));
+    rm_no(rm);
+}
+
 // fonction cp chem1 chem2
 
-void mkdir(noeud * n, char c[]);
-void touch(noeud * n, char c[]);
 void cp_no(noeud * n1, noeud * n2);
 
 void cp_succ(noeud * n, liste_noeud * l){
@@ -123,18 +192,19 @@ void cp_no(noeud * n1, noeud * n2){
     }
 }
 
-int get_last_slash(char c[]){
-    int i = strlen(c);
-    while (c[i] != '/' && i != 0){
-        i--;
-    }
-    return i;
+void cp(noeud * n, char c1[], char c2[]){
+    noeud * cp = cd_chem(n->racine,c1);
+    noeud * cl = cd_chem(n, substr(c2,0, get_last_slash(c2)));
+    mkdir(cl, substr(c2, get_last_slash(c2) + 1, strlen(c2)));
+    cl = cd_chem(cl, substr(c2, get_last_slash(c2) + 1,strlen(c2)));
+    cp_no(cl, cp);
 }
 
-char *substr(char src[],int pos,int len) {
-    char *dest = (char *) malloc(len+1);
-    strncat(dest,src+pos,len);
-    return dest;
+// fonction mv chem1 chem2
+
+void mv(noeud * n, const char * c1, const char * c2){
+    cp(n, c1, c2);
+    rm(n, c1);
 }
 
 // fonction print
@@ -174,3 +244,7 @@ void print_no(noeud * n){
     printf("\n");
 }
 
+void print(noeud * n){
+    print_no(n);
+    if(n->fils != NULL) print_succ(n->fils);
+}
