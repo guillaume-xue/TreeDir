@@ -214,16 +214,20 @@ void rm_no(noeud * n){
     free(n);
 }
 
+bool verif_arbo(noeud * n_a_supp, noeud * n_actuel);
+
 void rm(noeud * n, char c[]){
     char tmp[strlen(c)];
     strcpy(tmp,c);
     noeud * rm = cd_chem(n, tmp);
     assert(rm != NULL && "Chemin NULL");
     if(rm != n){
-        assert(verif_arbo(rm, n));
+        if(verif_arbo(rm, n)){
+            rm_cut(rm->pere, substr(c, get_last_slash(c) + 1, strlen(c)));
+            rm_no(rm);
+        }
     }
-    rm_cut(rm->pere, substr(c, get_last_slash(c) + 1, strlen(c)));
-    rm_no(rm);
+    
 }
 
 // Verifie si deux arborescence ses superpose
@@ -234,7 +238,7 @@ bool verif_arbo(noeud * n_a_supp, noeud * n_actuel){
     while (tmp != tmp->racine)
     {
         assert(n_a_supp != tmp && "");
-        tmp = tmp->pere
+        tmp = tmp->pere;
     }
     return true;
 
