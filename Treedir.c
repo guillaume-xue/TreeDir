@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -9,7 +8,7 @@
 
 bool test_validite_chemin(char c[]){
     //Verifie que la chaine n'est pas vide, ne commence pas par "/" et ne termine pas par "/"
-    if(c[0] == '\0' || c[0] == "/" || c[(int)(sizeof(c)/sizeof(c[0]))-1] == "/"){
+    if(c[0] == '\0' || (c[0] == '/' && c[1] == '\0')|| c[strlen(c)] == '/'){
         return false;
     }
     return true;
@@ -29,7 +28,7 @@ noeud * creer_racine(){
 
 // fonction ls
 
-void print_fils(liste_noeud *f){
+void print_fils(liste_noeud * f){
     printf("‰s\n",f->no->nom);
     if(f->succ != NULL){
         print_fils(f->succ);
@@ -49,6 +48,7 @@ noeud * find_noeud(liste_noeud * l, char c[]){
         return l->no;
     }
     if (l != NULL) return find_noeud(l->succ, c);
+    return NULL;
 }
 
 noeud * cd_chem(noeud * n, char c[]){
@@ -56,7 +56,7 @@ noeud * cd_chem(noeud * n, char c[]){
     noeud * res = NULL;
     const char * sep = "/";
     char * strTok = NULL;
-    if(c[0] == "/"){
+    if(c[0] == '/'){
         res = n->racine;
         strTok = strtok(c+1, sep);
     }else{
@@ -91,10 +91,11 @@ noeud * cd_pere(noeud * n){
 }
 
 // fonction pwd
+void pwd_fils(noeud * n);
 
 void pwd(noeud * n){// affiche juste "/" si c'est la racine
     if(n == n->racine){
-        print("/");
+        printf("/");
     }else{
         pwd_fils(n);
     }
@@ -153,6 +154,7 @@ struct liste_noeud * creer_fils(noeud * pere, char c[], bool b){
         }
         tmp->succ = creer_liste_noeud(pere, c, b);
     }
+    return NULL;
 }
 
 // fonction mkdir
@@ -270,7 +272,7 @@ void cp(noeud * n, char c1[], char c2[]){
 
 // fonction mv chem1 chem2
 
-void mv(noeud * n, const char * c1, const char * c2){
+void mv(noeud * n, char c1[], char c2[]){
     cp(n, c1, c2);
     rm(n, c1);
 }
@@ -315,4 +317,54 @@ void print_no(noeud * n){
 void print(noeud * n){
     print_no(n);
     if(n->fils != NULL) print_succ(n->fils);
+}
+
+int main(){
+
+    noeud * n = creer_racine();
+    mkdir(n, "Cours");
+    n = cd_chem(n, "Cours");
+    mkdir(n, "ProjetC");
+    mkdir(n, "Anglais");
+    n = cd_racine(n);
+    touch(n, "edt");
+    cp(n, "Cours", "/Td");
+    char s1[] = "/Td/ProjetC";
+    rm(n, s1);
+    char s2[] = "/Td/Anglais";
+    rm(n, s2);
+    n = cd_chem(n, "Td");
+    mkdir(n, "td1");
+    mkdir(n, "td2");
+    char s3[] = "/Cours/ProjetC";
+    char s4[] = "/CopieProjetC";
+    cp(n, s3, s4);
+    n = cd_racine(n);
+    char s5[] = "/Td";
+    char s6[] = "/Cours/Td";
+    mv(n, s5, s6);
+    print(n->racine);
+
+
+    /*
+    noeud * n = creer_racine();
+
+    mkdir(n,"Cours");
+    mkdir(n,"Td");
+    touch(n, "edt");
+
+    n = cd_chem(n, "Cours");
+    mkdir(n, "ProjetC");
+    mkdir(n, "Anglais");
+    n = cd_pere(n);
+    n = cd_chem(n, "Td");
+    touch(n, "td1");
+    touch(n, "td2");
+    n = cd_pere(n);
+    n = cd_chem(n, "Cours");
+    n = cd_chem(n, "ProjetC");
+
+    print(n->n);
+     */
+    return 0;
 }

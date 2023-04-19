@@ -1,5 +1,7 @@
-#ifndef Treedir_H
-#define Treedir_H
+#ifndef LISTE_H
+#define LISTE_H
+#include <stdbool.h>
+
 
 struct noeud;
 struct liste_noeud;
@@ -33,7 +35,7 @@ extern void mkdir(noeud * n, char c[]);
 extern void touch(noeud * n, char c[]);
 extern void rm(noeud * n, char c[]);
 extern void cp(noeud * n, char c1[], char c2[]);
-extern void mv(noeud * n, const char * c1, const char * c2);
+extern void mv(noeud * n, char c1[], char c2[]);
 extern void print(noeud * n);
 
 #endif
