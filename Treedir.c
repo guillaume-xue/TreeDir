@@ -29,7 +29,7 @@ noeud * creer_racine(){
 // fonction ls
 
 void print_fils(liste_noeud * f){
-    printf("‰s\n",f->no->nom);
+    printf("%s\n", f -> no -> nom);
     if(f->succ != NULL){
         print_fils(f->succ);
     }
