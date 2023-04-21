@@ -14,6 +14,14 @@ bool test_validite_chemin(char * c){
     return true;
 }
 
+char * dupliquer_char(const char * s){
+    char *res = malloc(strlen(s) * sizeof (char));
+    for(size_t i=0;i<strlen(s);i++){
+        res[i] = s[i];
+    }
+    return res;
+}
+
 // Base
 
 noeud * creer_racine(){
@@ -63,6 +71,7 @@ noeud * cd_chem(noeud * n, char * c){
         res = n;
         strTok = strtok(c, sep);
     }
+
     while (strTok != NULL && res->fils != NULL){
         res = find_noeud(res->fils,strTok);
         strTok = strtok(NULL, sep);
@@ -326,29 +335,22 @@ void print(noeud * n){
 int main(){
 
     noeud * n = creer_racine();
-    mkdir(n, "Cours");
-    n = cd_chem(n, "Cours");
-    mkdir(n, "ProjetC");
-    mkdir(n, "Anglais");
+    mkdir(n, dupliquer_char("Cours"));
+    n = cd_chem(n, dupliquer_char("Cours"));
+    mkdir(n, dupliquer_char("ProjetC"));
+    mkdir(n, dupliquer_char("Anglais"));
     n = cd_racine(n);
-    touch(n, "edt");
-    cp(n, "Cours", "/Td");
-    char s1[] = "/Td/ProjetC";
-    rm(n, s1);
-    char s2[] = "/Td/Anglais";
-    rm(n, s2);
-    n = cd_chem(n, "Td");
-    mkdir(n, "td1");
-    mkdir(n, "td2");
-    char s3[] = "/Cours/ProjetC";
-    char s4[] = "/CopieProjetC";
-    cp(n, s3, s4);
+    touch(n, dupliquer_char("edt"));
+    cp(n, dupliquer_char("Cours"), dupliquer_char("/Td"));
+    rm(n, dupliquer_char("/Td/ProjetC"));
+    rm(n, dupliquer_char("/Td/Anglais"));
+    n = cd_chem(n, dupliquer_char("Td"));
+    mkdir(n, dupliquer_char("td1"));
+    mkdir(n, dupliquer_char("td2"));
+    cp(n, dupliquer_char("/Cours/ProjetC"), dupliquer_char("/CopieProjetC"));
     n = cd_racine(n);
-    char s5[] = "/Td";
-    char s6[] = "/Cours/Td";
-    mv(n, s5, s6);
+    mv(n, dupliquer_char("/Td"), dupliquer_char("/Cours/Td"));
     print(n->racine);
-
 
     /*
     noeud * n = creer_racine();
