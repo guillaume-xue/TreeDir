@@ -27,15 +27,15 @@ extern noeud * n;
 
 extern noeud * creer_racine();
 extern void ls(noeud *n);
-extern noeud * cd_chem(noeud * n, char c[]);
+extern noeud * cd_chem(noeud * n, char * c);
 extern noeud * cd_racine(noeud * n);
 extern noeud * cd_pere(noeud * n);
 extern void pwd(noeud * n);
-extern void mkdir(noeud * n, char c[]);
-extern void touch(noeud * n, char c[]);
-extern void rm(noeud * n, char c[]);
-extern void cp(noeud * n, char c1[], char c2[]);
-extern void mv(noeud * n, char c1[], char c2[]);
+extern void mkdir(noeud * n, char * c);
+extern void touch(noeud * n, char * c);
+extern void rm(noeud * n, char * c);
+extern void cp(noeud * n, char * c1, char * c2);
+extern void mv(noeud * n, char * c1, char * c2);
 extern void print(noeud * n);
 
 #endif

@@ -6,7 +6,7 @@
 
 // Test validité du chemin
 
-bool test_validite_chemin(char c[]){
+bool test_validite_chemin(char * c){
     //Verifie que la chaine n'est pas vide, ne commence pas par "/" et ne termine pas par "/"
     if(c[0] == '\0' || (c[0] == '/' && c[1] == '\0')|| c[strlen(c)] == '/'){
         return false;
@@ -43,7 +43,7 @@ void ls(noeud *n){
 
 // fonction cd_chem
 
-noeud * find_noeud(liste_noeud * l, char c[]){
+noeud * find_noeud(liste_noeud * l, char * c){
     if (strcmp(l->no->nom, c) == 0){
         return l->no;
     }
@@ -51,7 +51,7 @@ noeud * find_noeud(liste_noeud * l, char c[]){
     return NULL;
 }
 
-noeud * cd_chem(noeud * n, char c[]){
+noeud * cd_chem(noeud * n, char * c){
     assert(test_validite_chemin(c) && "Chemin avec un format non autorise.");
     noeud * res = NULL;
     const char * sep = "/";
@@ -110,7 +110,7 @@ void pwd_fils(noeud * n){
 
 // Verifie s'il y'a un duplicata de nom
 
-bool verif_existe_dupli(noeud * n, char c[]){
+bool verif_existe_dupli(noeud * n, char * c){
     liste_noeud * tmp = n->fils;
     while (tmp != NULL)
     {
@@ -124,7 +124,7 @@ bool verif_existe_dupli(noeud * n, char c[]){
 
 // fonction mkdir et touch
 
-noeud * creer_noeud(noeud * pere, char c[], bool b){
+noeud * creer_noeud(noeud * pere, char * c, bool b){
     noeud * res = malloc(sizeof (noeud));
     res->est_dossier = b;
     for (int i = 0; c[i] != '\0'; ++i) {
@@ -136,14 +136,14 @@ noeud * creer_noeud(noeud * pere, char c[], bool b){
     return res;
 }
 
-liste_noeud * creer_liste_noeud(noeud * pere, char c[], bool b){
+liste_noeud * creer_liste_noeud(noeud * pere, char * c, bool b){
     liste_noeud * res = malloc(sizeof (liste_noeud));
     res->no = creer_noeud(pere, c, b);
     res->succ = NULL;
     return res;
 }
 
-struct liste_noeud * creer_fils(noeud * pere, char c[], bool b){
+struct liste_noeud * creer_fils(noeud * pere, char * c, bool b){
     if (pere->fils == NULL){
         pere->fils = creer_liste_noeud(pere, c, b);
     }else{
@@ -159,25 +159,25 @@ struct liste_noeud * creer_fils(noeud * pere, char c[], bool b){
 
 // fonction mkdir
 
-void mkdir(noeud * n, char c[]){
+void mkdir(noeud * n, char * c){
     creer_fils(n, c, true);
 }
 
 // fonction touch
 
-void touch(noeud * n, char c[]){
+void touch(noeud * n, char * c){
     creer_fils(n, c, false);
 }
 
 // fonction rm chem
 
-char *substr(char src[],int pos,int len) {
+char *substr(char * src, int pos, int len) {
     char *dest = (char *) malloc(len+1);
     strncat(dest,src+pos,len);
     return dest;
 }
 
-int get_last_slash(char c[]){
+int get_last_slash(char * c){
     int i = strlen(c);
     while (c[i] != '/' && i != 0){
         i--;
@@ -185,7 +185,7 @@ int get_last_slash(char c[]){
     return i;
 }
 
-void rm_cut(noeud * n, char c[]){
+void rm_cut(noeud * n, char * c){
     if(strcmp(n->fils->no->nom, c) == 0) {
         n->fils = n->fils->succ;
     } else{
@@ -216,7 +216,7 @@ void rm_no(noeud * n){
 
 bool verif_arbo(noeud * n_a_supp, noeud * n_actuel);
 
-void rm(noeud * n, char c[]){
+void rm(noeud * n, char * c){
     char tmp[strlen(c)];
     strcpy(tmp,c);
     noeud * rm = cd_chem(n, tmp);
@@ -266,7 +266,7 @@ void cp_no(noeud * n1, noeud * n2){
     }
 }
 
-void cp(noeud * n, char c1[], char c2[]){
+void cp(noeud * n, char * c1, char * c2){
     noeud * cp = cd_chem(n->racine,c1);
     noeud * cl = cd_chem(n, substr(c2,0, get_last_slash(c2)));
     mkdir(cl, substr(c2, get_last_slash(c2) + 1, strlen(c2)));
@@ -276,7 +276,7 @@ void cp(noeud * n, char c1[], char c2[]){
 
 // fonction mv chem1 chem2
 
-void mv(noeud * n, char c1[], char c2[]){
+void mv(noeud * n, char * c1, char * c2){
     cp(n, c1, c2);
     rm(n, c1);
 }
