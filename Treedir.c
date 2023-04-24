@@ -152,16 +152,16 @@ liste_noeud * creer_liste_noeud(noeud * pere, char * c, bool b){
     return res;
 }
 
-liste_noeud * creer_fils(char * c, bool b){
-    if (n->fils == NULL){
-        n->fils = creer_liste_noeud(n, c, b);
+liste_noeud * creer_fils(noeud * no, char * c, bool b){
+    if (no->fils == NULL){
+        no->fils = creer_liste_noeud(no, c, b);
     }else{
-        assert(!verif_existe_dupli(n, c) && "Il est existe deja un dossier ou fichier avec ce nom.");
-        liste_noeud * tmp = n->fils;
+        assert(!verif_existe_dupli(no, c) && "Il est existe deja un dossier ou fichier avec ce nom.");
+        liste_noeud * tmp = no->fils;
         while (tmp->succ != NULL){
             tmp = tmp->succ;
         }
-        tmp->succ = creer_liste_noeud(n, c, b);
+        tmp->succ = creer_liste_noeud(no, c, b);
     }
     return NULL;
 }
@@ -169,13 +169,13 @@ liste_noeud * creer_fils(char * c, bool b){
 // fonction mkdir
 
 void mkdir(char * c){
-    creer_fils(c, true);
+    creer_fils(n, c, true);
 }
 
 // fonction touch
 
 void touch(char * c){
-    creer_fils(c, false);
+    creer_fils(n, c, false);
 }
 
 // fonction rm chem
@@ -271,11 +271,18 @@ void cp_no(noeud * n1, noeud * n2){
 
 void cp(char * c1, char * c2){
     noeud * tmp = n;
-    cd_chem(c1);
+    cd_racine();
+    cd_chem(dupliquer_char(c1));
     noeud * cp = n;
-    cd_chem(substr(c2,0, get_last_slash(c2) + 1));
-    mkdir(substr(c2, get_last_slash(c2) + 1, strlen(c2)));
-    cd_chem(substr(c2, get_last_slash(c2) + 1,strlen(c2)));
+    n = tmp;
+    cd_chem(substr(c2,0, get_last_slash(c2)));
+    if (strcmp(substr(c2, 0, 1), "/") == 0){
+        mkdir(substr(c2, get_last_slash(c2) + 1, strlen(c2)));
+        cd_chem(substr(c2, get_last_slash(c2) + 1,strlen(c2)));
+    }else{
+        mkdir(substr(c2, get_last_slash(c2), strlen(c2)));
+        cd_chem(substr(c2, get_last_slash(c2),strlen(c2)));
+    }
     noeud * cl = n;
     cp_no(cl, cp);
     n = tmp;
