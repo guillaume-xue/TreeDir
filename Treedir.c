@@ -95,7 +95,7 @@ void cd_chem(char * c){
         strTok = strtok(NULL, sep);
     }
     if(strTok != NULL && res->fils == NULL){
-        printf("Erreur : Le chemin indique n existe pas.");
+        printf("Erreur : Le chemin indique n existe pas. ");
     }
     if(strTok == NULL && !res->est_dossier){
         printf("Erreur : Le chemin indique n est pas un dossier.");
@@ -189,7 +189,7 @@ int get_last_slash(char * c){
 }
 
 void rm_cut(noeud * no, char * c){
-    if(strcmp(dupliquer_char(no->fils->no->nom), c) == 0) {
+    if(strcmp(no->fils->no->nom, c) == 0) {
         no->fils = no->fils->succ;
     }else{
         liste_noeud * tmp = no->fils;
@@ -222,11 +222,12 @@ bool verif_arbo(noeud * n_a_supp, noeud * n_actuel);
 void rm(char * c){
     noeud * tmp = n;
     cd_chem(dupliquer_char(c));
-    assert(n != NULL && "Chemin NULL");
-    if(tmp != n){
-        if(verif_arbo(n, tmp)){
-            rm_cut(tmp, substr(c, get_last_slash(c) + 1, strlen(c)));
-            rm_no(n);
+    noeud * rm = n;
+    assert(rm != NULL && "Chemin NULL");
+    if(rm != tmp){
+        if(verif_arbo(tmp, rm)){
+            rm_cut(rm->pere, substr(c, get_last_slash(c) + 1, strlen(c)));
+            rm_no(rm);
         }
     }
     n = tmp;
