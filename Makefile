@@ -1,5 +1,5 @@
-all : Treedir
-Treedir : Treedir.c Treedir.h
-	gcc -Wall -o Treedir Treedir.c
+all : main
+main : Treedir.c Treedir.h main.c
+	gcc -Wall -o main Treedir.c
 clean :
-	rm -rf Treedir
+	rm -rf main

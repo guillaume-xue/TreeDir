@@ -4,6 +4,18 @@
 #include <assert.h>
 #include "Treedir.h"
 
+// Variable globale
+
+char * dupliquer_char(const char * s){
+    char *res = malloc(strlen(s) * sizeof (char));
+    for(size_t i=0;i<strlen(s);i++){
+        res[i] = s[i];
+    }
+    return res;
+}
+
+noeud * n = NULL;
+
 // Test validité du chemin
 
 bool test_validite_chemin(char * c){
@@ -14,42 +26,51 @@ bool test_validite_chemin(char * c){
     return true;
 }
 
-char * dupliquer_char(const char * s){
-    char *res = malloc(strlen(s) * sizeof (char));
-    for(size_t i=0;i<strlen(s);i++){
-        res[i] = s[i];
-    }
-    return res;
-}
-
 // Base
 
-noeud * creer_racine(){
-    noeud * res = malloc(sizeof (noeud));
-    res->est_dossier = true;
-    res->nom[0] = '\0';
-    res->pere = res;
-    res->racine = res;
-    res->fils = NULL;
-    return res;
+void creer_racine(){
+    n = malloc(sizeof (noeud));
+    n->est_dossier = true;
+    n->nom[0] = '\0';
+    n->pere = n;
+    n->racine = n;
+    n->fils = NULL;
 }
 
 // fonction ls
 
 void print_fils(liste_noeud * f){
-    printf("%s\n", f -> no -> nom);
+    printf("%s\n", f->no->nom);
     if(f->succ != NULL){
         print_fils(f->succ);
     }
 }
 
-void ls(noeud *n){
+void ls(){
     if(n->fils != NULL){
         print_fils(n->fils);
     }
 }
 
+// fonction cd
+
+void cd_racine(){
+    n = n->racine;
+}
+
+// fonction cd ..
+
+void cd_pere(){
+    n = n->pere;
+}
+
 // fonction cd_chem
+
+char *substr(char * src, int pos, int len) {
+    char *dest = (char *) malloc(len+1);
+    strncat(dest,src+pos,len);
+    return dest;
+}
 
 noeud * find_noeud(liste_noeud * l, char * c){
     if (strcmp(l->no->nom, c) == 0){
@@ -59,62 +80,41 @@ noeud * find_noeud(liste_noeud * l, char * c){
     return NULL;
 }
 
-noeud * cd_chem(noeud * n, char * c){
-    assert(test_validite_chemin(c) && "Chemin avec un format non autorise.");
+void cd_chem(char * c){
+    //assert(test_validite_chemin(c) && "Chemin avec un format non autorise.");
     noeud * res = NULL;
     const char * sep = "/";
     char * strTok = NULL;
-    if(c[0] == '/'){
-        res = n->racine;
-        strTok = strtok(c+1, sep);
-    }else{
-        res = n;
-        strTok = strtok(c, sep);
+    if (strcmp(substr(c,0,1), sep) == 0){
+        cd_racine();
     }
-
+    res = n;
+    strTok = strtok(c, sep);
     while (strTok != NULL && res->fils != NULL){
         res = find_noeud(res->fils,strTok);
         strTok = strtok(NULL, sep);
     }
     if(strTok != NULL && res->fils == NULL){
         printf("Erreur : Le chemin indique n existe pas.");
-        return NULL;
     }
     if(strTok == NULL && !res->est_dossier){
         printf("Erreur : Le chemin indique n est pas un dossier.");
-        return NULL;
     }
-    return res;
-}
-
-// fonction cd
-
-noeud * cd_racine(noeud * n){
-    return n->racine;
-}
-
-// fonction cd ..
-
-noeud * cd_pere(noeud * n){
-    return n->pere;
+    n = res;
 }
 
 // fonction pwd
-void pwd_fils(noeud * n);
-
-void pwd(noeud * n){// affiche juste "/" si c'est la racine
-    if(n == n->racine){
-        printf("/");
-    }else{
-        pwd_fils(n);
-    }
-}
 
 void pwd_fils(noeud * n){
     if (n != n->racine){
         pwd_fils(n->pere);
         printf("/%s",n->nom);
     }
+}
+
+void pwd(){
+    if(n == n->racine) printf("/"); // affiche juste "/" si c'est la racine
+    pwd_fils(n);
 }
 
 // Verifie s'il y'a un duplicata de nom
@@ -131,7 +131,7 @@ bool verif_existe_dupli(noeud * n, char * c){
     return false;
 }
 
-// fonction mkdir et touch
+// fonction auxilière de mkdir et touch
 
 noeud * creer_noeud(noeud * pere, char * c, bool b){
     noeud * res = malloc(sizeof (noeud));
@@ -152,39 +152,33 @@ liste_noeud * creer_liste_noeud(noeud * pere, char * c, bool b){
     return res;
 }
 
-struct liste_noeud * creer_fils(noeud * pere, char * c, bool b){
-    if (pere->fils == NULL){
-        pere->fils = creer_liste_noeud(pere, c, b);
+liste_noeud * creer_fils(char * c, bool b){
+    if (n->fils == NULL){
+        n->fils = creer_liste_noeud(n, c, b);
     }else{
-        assert(!verif_existe_dupli(pere, c) && "Il est existe deja un dossier ou fichier avec ce nom.");
-        liste_noeud * tmp = pere->fils;
+        assert(!verif_existe_dupli(n, c) && "Il est existe deja un dossier ou fichier avec ce nom.");
+        liste_noeud * tmp = n->fils;
         while (tmp->succ != NULL){
             tmp = tmp->succ;
         }
-        tmp->succ = creer_liste_noeud(pere, c, b);
+        tmp->succ = creer_liste_noeud(n, c, b);
     }
     return NULL;
 }
 
 // fonction mkdir
 
-void mkdir(noeud * n, char * c){
-    creer_fils(n, c, true);
+void mkdir(char * c){
+    creer_fils(c, true);
 }
 
 // fonction touch
 
-void touch(noeud * n, char * c){
-    creer_fils(n, c, false);
+void touch(char * c){
+    creer_fils(c, false);
 }
 
 // fonction rm chem
-
-char *substr(char * src, int pos, int len) {
-    char *dest = (char *) malloc(len+1);
-    strncat(dest,src+pos,len);
-    return dest;
-}
 
 int get_last_slash(char * c){
     int i = strlen(c);
@@ -194,19 +188,19 @@ int get_last_slash(char * c){
     return i;
 }
 
-void rm_cut(noeud * n, char * c){
-    if(strcmp(n->fils->no->nom, c) == 0) {
-        n->fils = n->fils->succ;
-    } else{
-        liste_noeud * tmp = n->fils;
-        while (strcmp(tmp->succ->no->nom,c) != 0 && tmp->succ != NULL){
+void rm_cut(noeud * no, char * c){
+    if(strcmp(dupliquer_char(no->fils->no->nom), c) == 0) {
+        no->fils = no->fils->succ;
+    }else{
+        liste_noeud * tmp = no->fils;
+        while (strcmp(dupliquer_char(tmp->succ->no->nom), c) != 0 && tmp->succ != NULL){
             tmp = tmp->succ;
         }
         tmp->succ = tmp->succ->succ;
     }
 }
 
-void rm_no(noeud * n);
+void rm_no(noeud * no);
 
 void rm_succ(liste_noeud * l){
     if(l != NULL){
@@ -216,27 +210,26 @@ void rm_succ(liste_noeud * l){
     }
 }
 
-void rm_no(noeud * n){
-    if(n->fils != NULL){
-        rm_succ(n->fils);
+void rm_no(noeud * no){
+    if(no->fils != NULL){
+        rm_succ(no->fils);
     }
-    free(n);
+    free(no);
 }
 
 bool verif_arbo(noeud * n_a_supp, noeud * n_actuel);
 
-void rm(noeud * n, char * c){
-    char tmp[strlen(c)];
-    strcpy(tmp,c);
-    noeud * rm = cd_chem(n, tmp);
-    assert(rm != NULL && "Chemin NULL");
-    if(rm != n){
-        if(verif_arbo(rm, n)){
-            rm_cut(rm->pere, substr(c, get_last_slash(c) + 1, strlen(c)));
-            rm_no(rm);
+void rm(char * c){
+    noeud * tmp = n;
+    cd_chem(dupliquer_char(c));
+    assert(n != NULL && "Chemin NULL");
+    if(tmp != n){
+        if(verif_arbo(n, tmp)){
+            rm_cut(tmp, substr(c, get_last_slash(c) + 1, strlen(c)));
+            rm_no(n);
         }
     }
-    
+    n = tmp;
 }
 
 // Verifie si deux arborescence ses superpose
@@ -259,9 +252,9 @@ void cp_no(noeud * n1, noeud * n2);
 
 void cp_succ(noeud * n, liste_noeud * l){
     if (l->no->est_dossier){
-        mkdir(n,l->no->nom);
+        mkdir(l->no->nom);
     }else{
-        touch(n,l->no->nom);
+        touch(l->no->nom);
     }
     if(l->succ != NULL){
         cp_succ(n,l->succ);
@@ -275,19 +268,23 @@ void cp_no(noeud * n1, noeud * n2){
     }
 }
 
-void cp(noeud * n, char * c1, char * c2){
-    noeud * cp = cd_chem(n->racine,c1);
-    noeud * cl = cd_chem(n, substr(c2,0, get_last_slash(c2)));
-    mkdir(cl, substr(c2, get_last_slash(c2) + 1, strlen(c2)));
-    cl = cd_chem(cl, substr(c2, get_last_slash(c2) + 1,strlen(c2)));
+void cp(char * c1, char * c2){
+    noeud * tmp = n;
+    cd_chem(c1);
+    noeud * cp = n;
+    cd_chem(substr(c2,0, get_last_slash(c2) + 1));
+    mkdir(substr(c2, get_last_slash(c2) + 1, strlen(c2)));
+    cd_chem(substr(c2, get_last_slash(c2) + 1,strlen(c2)));
+    noeud * cl = n;
     cp_no(cl, cp);
+    n = tmp;
 }
 
 // fonction mv chem1 chem2
 
-void mv(noeud * n, char * c1, char * c2){
-    cp(n, c1, c2);
-    rm(n, c1);
+void mv(char * c1, char * c2){
+    cp(c1, c2);
+    rm(c1);
 }
 
 // fonction print
@@ -330,47 +327,4 @@ void print_no(noeud * n){
 void print(noeud * n){
     print_no(n);
     if(n->fils != NULL) print_succ(n->fils);
-}
-
-int main(){
-
-    noeud * n = creer_racine();
-    mkdir(n, dupliquer_char("Cours"));
-    n = cd_chem(n, dupliquer_char("Cours"));
-    mkdir(n, dupliquer_char("ProjetC"));
-    mkdir(n, dupliquer_char("Anglais"));
-    n = cd_racine(n);
-    touch(n, dupliquer_char("edt"));
-    cp(n, dupliquer_char("Cours"), dupliquer_char("/Td"));
-    rm(n, dupliquer_char("/Td/ProjetC"));
-    rm(n, dupliquer_char("/Td/Anglais"));
-    n = cd_chem(n, dupliquer_char("Td"));
-    mkdir(n, dupliquer_char("td1"));
-    mkdir(n, dupliquer_char("td2"));
-    cp(n, dupliquer_char("/Cours/ProjetC"), dupliquer_char("/CopieProjetC"));
-    n = cd_racine(n);
-    mv(n, dupliquer_char("/Td"), dupliquer_char("/Cours/Td"));
-    print(n->racine);
-
-    /*
-    noeud * n = creer_racine();
-
-    mkdir(n,"Cours");
-    mkdir(n,"Td");
-    touch(n, "edt");
-
-    n = cd_chem(n, "Cours");
-    mkdir(n, "ProjetC");
-    mkdir(n, "Anglais");
-    n = cd_pere(n);
-    n = cd_chem(n, "Td");
-    touch(n, "td1");
-    touch(n, "td2");
-    n = cd_pere(n);
-    n = cd_chem(n, "Cours");
-    n = cd_chem(n, "ProjetC");
-
-    print(n->n);
-     */
-    return 0;
 }

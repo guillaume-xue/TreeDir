@@ -1,49 +1,48 @@
+#include <printf.h>
 #include "Treedir.h"
+
+extern noeud * n;
 
 int main(){
 
-    noeud * n = creer_racine();
-    mkdir(n, "Cours");
-    n = cd_chem(n, "Cours");
-    mkdir(n, "ProjetC");
-    mkdir(n, "Anglais");
-    n = cd_racine(n);
-    touch(n, "edt");
-    cp(n, "Cours", "/Td");
-    char s1[] = "/Td/ProjetC";
-    rm(n, s1);
-    char s2[] = "/Td/Anglais";
-    rm(n, s2);
-    n = cd_chem(n, "Td");
-    mkdir(n, "td1");
-    mkdir(n, "td2");
-    char s3[] = "/Cours/ProjetC";
-    char s4[] = "/CopieProjetC";
-    cp(n, s3, s4);
-    n = cd_racine(n);
-    char s5[] = "/Td";
-    char s6[] = "/Cours/Td";
-    mv(n, s5, s6);
+    creer_racine();
+    mkdir(dupliquer_char("Cours"));
+    cd_chem(dupliquer_char("Cours"));
+    mkdir(dupliquer_char("ProjetC"));
+    mkdir(dupliquer_char("Anglais"));
+    cd_racine();
+    touch(dupliquer_char("edt"));
+    cp(dupliquer_char("Cours"), dupliquer_char("/Td"));
+    print(n->racine);
+    rm(dupliquer_char("/Td/ProjetC"));
+    print(n->racine);
+    rm(dupliquer_char("/Td/Anglais"));
+    cd_chem(dupliquer_char("Td"));
+    mkdir(dupliquer_char("td1"));
+    mkdir(dupliquer_char("td2"));
+    cp(dupliquer_char("/Cours/ProjetC"), dupliquer_char("CopieProjetC"));
+    cd_racine(n);
+    mv(dupliquer_char("Td"), dupliquer_char("/Cours/Td"));
     print(n->racine);
 
 
     /*
-    noeud * n = creer_racine();
+    creer_racine();
 
-    mkdir(n,"Cours");
-    mkdir(n,"Td");
-    touch(n, "edt");
+    mkdir("Cours");
+    mkdir("Td");
+    touch("edt");
 
-    n = cd_chem(n, "Cours");
-    mkdir(n, "ProjetC");
-    mkdir(n, "Anglais");
-    n = cd_pere(n);
-    n = cd_chem(n, "Td");
+    cd_chem("Cours");
+    mkdir("ProjetC");
+    mkdir("Anglais");
+    cd_pere(n);
+    cd_chem(n, "Td");
     touch(n, "td1");
     touch(n, "td2");
-    n = cd_pere(n);
-    n = cd_chem(n, "Cours");
-    n = cd_chem(n, "ProjetC");
+    cd_pere(n);
+    cd_chem(n, "Cours");
+    cd_chem(n, "ProjetC");
 
     print(n->n);
      */
