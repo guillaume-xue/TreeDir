@@ -1,9 +1,21 @@
-all : main
-Treedir.o : Treedir.c Treedir.h
-	gcc -Wall -c Treedir.c
-main.o : main.c Treedir.h
-	gcc -Wall -c main.c
-main : main.o Treedir.o
-	gcc -Wall -o main Treedir.o main.o
+CC = gcc
+CFLAGS = -Wall
+DEPS = Treedir.h
+EXEC = main
+
+all : $(EXEC)
+
+Treedir.o : Treedir.c $(DEPS)
+	$(CC) $(CFLAGS) -c Treedir.c
+
+readFile.o : readFile.c $(DEPS)
+	$(CC) $(CFLAGS) -c readFile.c
+
+main.o : main.c $(DEPS)
+	$(CC) $(CFLAGS) -c main.c
+
+$(EXEC) : main.o Treedir.o readFile.o
+	$(CC) $(CFLAGS) -o $(EXEC) Treedir.o readFile.o main.o
+
 clean :
-	rm -rf main *.o
+	rm -rf $(EXEC) *.o

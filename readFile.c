@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "Treedir.h"
 
 void make_cmd(char * cmd, char * chem1, char * chem2){
@@ -38,7 +39,7 @@ void make_cmd(char * cmd, char * chem1, char * chem2){
 }
 
 void read_file(FILE * f){
-    char * c;
+    char * c = malloc(sizeof(char));
     while(fgets(c, 50, f) != NULL){
 
         int count = 0;
