@@ -6,7 +6,7 @@
 
 // Variable globale
 
-char * dupliquer_char(const char * s){
+char * dupliquer_char_s(const char * s){
     char *res = malloc(strlen(s) * sizeof (char));
     for(size_t i=0;i<strlen(s);i++){
         res[i] = s[i];
@@ -193,7 +193,7 @@ void rm_cut(noeud * no, char * c){
         no->fils = no->fils->succ;
     }else{
         liste_noeud * tmp = no->fils;
-        while (strcmp(dupliquer_char(tmp->succ->no->nom), c) != 0 && tmp->succ != NULL){
+        while (strcmp(dupliquer_char_s(tmp->succ->no->nom), c) != 0 && tmp->succ != NULL){
             tmp = tmp->succ;
         }
         tmp->succ = tmp->succ->succ;
@@ -221,7 +221,7 @@ bool verif_arbo(noeud * n_a_supp, noeud * n_actuel);
 
 void rm(char * c){
     noeud * tmp = n;
-    cd_chem(dupliquer_char(c));
+    cd_chem(dupliquer_char_s(c));
     noeud * rm = n;
     assert(rm != NULL && "Chemin NULL");
     if(rm != tmp){
@@ -272,7 +272,7 @@ void cp_no(noeud * n1, noeud * n2){
 void cp(char * c1, char * c2){
     noeud * tmp = n;
     cd_racine();
-    cd_chem(dupliquer_char(c1));
+    cd_chem(dupliquer_char_s(c1));
     noeud * cp = n;
     n = tmp;
     cd_chem(substr(c2,0, get_last_slash(c2)));

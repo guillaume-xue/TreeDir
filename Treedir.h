@@ -22,7 +22,6 @@ typedef struct noeud noeud;
 
 typedef struct liste_noeud liste_noeud;
 
-extern char * dupliquer_char(const char * s);
 extern void creer_racine();
 extern void ls();
 extern void cd_chem(char * c);
@@ -37,5 +36,6 @@ extern void mv(char * c1, char * c2);
 extern void print(noeud * n);
 
 extern void read_file(FILE * f);
+extern char * dupliquer_char_s(const char * s);
 
 #endif

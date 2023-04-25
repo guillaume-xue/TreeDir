@@ -5,43 +5,44 @@ extern noeud * n;
 
 int main(){
 
+    creer_racine();
+
+
     FILE * f = fopen("/Users/guillaume/Dev_Code/Cours/TreeDir/test.txt", "r");
     read_file(f);
     fclose(f);
 
     /*
-    creer_racine();
-    mkdir(dupliquer_char("Cours"));
-    cd_chem(dupliquer_char("Cours"));
-    mkdir(dupliquer_char("ProjetC"));
-    mkdir(dupliquer_char("Anglais"));
+    mkdir(dupliquer_char_s("Cours"));
+    cd_chem(dupliquer_char_s("Cours"));
+    mkdir(dupliquer_char_s("ProjetC"));
+    mkdir(dupliquer_char_s("Anglais"));
     cd_racine();
-    touch(dupliquer_char("edt"));
-    cp(dupliquer_char("Cours"), dupliquer_char("/Td"));
+    touch(dupliquer_char_s("edt"));
+    cp(dupliquer_char_s("Cours"), dupliquer_char_s("/Td"));
     print(n->racine);
     printf("\n");
 
-    rm(dupliquer_char("/Td/ProjetC"));
+    rm(dupliquer_char_s("/Td/ProjetC"));
     print(n->racine);
     printf("\n");
 
-    rm(dupliquer_char("/Td/Anglais"));
+    rm(dupliquer_char_s("/Td/Anglais"));
     print(n->racine);
     printf("\n");
 
-    cd_chem(dupliquer_char("Td"));
-    mkdir(dupliquer_char("td1"));
-    mkdir(dupliquer_char("td2"));
+    cd_chem(dupliquer_char_s("Td"));
+    mkdir(dupliquer_char_s("td1"));
+    mkdir(dupliquer_char_s("td2"));
     print(n->racine);
     printf("\n");
 
-    cp(dupliquer_char("/Cours/ProjetC"), dupliquer_char("CopieProjetC"));
+    cp(dupliquer_char_s("/Cours/ProjetC"), dupliquer_char_s("CopieProjetC"));
     print(n->racine);
-     */
+    */
 
 
     /*
-    creer_racine();
 
     mkdir("Cours");
     mkdir("Td");
@@ -50,13 +51,13 @@ int main(){
     cd_chem("Cours");
     mkdir("ProjetC");
     mkdir("Anglais");
-    cd_pere(n);
-    cd_chem(n, "Td");
-    touch(n, "td1");
+    cd_pere();
+    cd_chem("Td");
+    touch("td1");
     touch(n, "td2");
-    cd_pere(n);
-    cd_chem(n, "Cours");
-    cd_chem(n, "ProjetC");
+    cd_pere();
+    cd_chem("Cours");
+    cd_chem("ProjetC");
 
     print(n->n);
      */
