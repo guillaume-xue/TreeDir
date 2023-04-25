@@ -1,4 +1,5 @@
 #include <printf.h>
+#include <stdlib.h>
 #include "Treedir.h"
 
 extern noeud * n;
@@ -7,9 +8,10 @@ int main(){
 
     creer_racine();
 
-
     FILE * f = fopen("/Users/guillaume/Dev_Code/Cours/TreeDir/test.txt", "r");
+    if (f == NULL) exit(1);
     read_file(f);
+    print(n->racine);
     fclose(f);
 
     /*

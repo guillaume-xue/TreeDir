@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include "Treedir.h"
 
@@ -40,7 +39,6 @@ void make_cmd(char * cmd, char * chem1, char * chem2){
 
 void read_file(FILE * f){
     char * c;
-    if (f == NULL) exit(1);
     while(fgets(c, 50, f) != NULL){
 
         int count = 0;
@@ -48,7 +46,7 @@ void read_file(FILE * f){
         char * chem1 = NULL;
         char * chem2 = NULL;
 
-        const char * sep = " ";
+        const char * sep = " \n";
         char * strTok = NULL;
         strTok = strtok(c, sep);
 
@@ -61,6 +59,7 @@ void read_file(FILE * f){
             strTok = strtok(NULL, sep);
             count++;
         }
-        printf("%s %s %s \n", cmd, chem1 != NULL ? chem1 : "NULL", chem2 != NULL ? chem2 : "NULL");
+
+        make_cmd(cmd, chem1, chem2);
     }
 }

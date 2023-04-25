@@ -12,4 +12,3 @@ mkdir td1
 mkdir td2
 cp /Cours/ProjetC CopieProjet
 cd
-mv Td /Cours/Td
