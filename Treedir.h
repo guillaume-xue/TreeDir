@@ -2,7 +2,6 @@
 #define LISTE_H
 #include <stdbool.h>
 
-
 struct noeud;
 struct liste_noeud;
 
@@ -36,5 +35,7 @@ extern void rm(char * c);
 extern void cp(char * c1, char * c2);
 extern void mv(char * c1, char * c2);
 extern void print(noeud * n);
+
+extern void read_file(FILE * f);
 
 #endif

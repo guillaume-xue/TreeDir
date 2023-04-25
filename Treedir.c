@@ -310,13 +310,6 @@ void print_list(liste_noeud * l){
     }
 }
 
-void print(noeud * n);
-
-void print_succ(liste_noeud * l){
-    print(l->no);
-    if (l->succ != NULL) print_succ(l->succ);
-}
-
 void print_no(noeud * n){
     char * nom = n->nom;
     char * est_dossier =  n->est_dossier ? "D" : "F";
@@ -332,7 +325,14 @@ void print_no(noeud * n){
     printf("\n");
 }
 
+void print(noeud * n);
+
+void print_succ(liste_noeud * l){
+    print(l->no);
+    if (l->succ != NULL) print_succ(l->succ);
+}
+
 void print(noeud * n){
     print_no(n);
-    if(n->fils != NULL) print_succ(n->fils);
+    if (n->fils != NULL) print_succ(n->fils);
 }

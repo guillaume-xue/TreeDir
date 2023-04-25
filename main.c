@@ -5,6 +5,11 @@ extern noeud * n;
 
 int main(){
 
+    FILE * f = fopen("/Users/guillaume/Dev_Code/Cours/TreeDir/test.txt", "r");
+    read_file(f);
+    fclose(f);
+
+    /*
     creer_racine();
     mkdir(dupliquer_char("Cours"));
     cd_chem(dupliquer_char("Cours"));
@@ -25,8 +30,6 @@ int main(){
     printf("\n");
 
     cd_chem(dupliquer_char("Td"));
-    printf("\n");
-
     mkdir(dupliquer_char("td1"));
     mkdir(dupliquer_char("td2"));
     print(n->racine);
@@ -34,6 +37,7 @@ int main(){
 
     cp(dupliquer_char("/Cours/ProjetC"), dupliquer_char("CopieProjetC"));
     print(n->racine);
+     */
 
 
     /*
