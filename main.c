@@ -4,15 +4,26 @@
 
 extern noeud * n;
 
-int main(){
+int main(int argc, char* argv[]){
 
-    creer_racine();
+    if (argc == 2){
 
-    FILE * f = fopen("/Users/guillaume/Dev_Code/Cours/TreeDir/test.txt", "r");
-    if (f == NULL) exit(1);
-    read_file(f);
-    print(n->racine);
-    fclose(f);
+        char * filename = argv[1];
+
+        FILE * f = fopen(filename, "r");
+        if (f == NULL){
+            printf("Fichier non trouver.\n");
+            exit(1);
+        }
+
+        creer_racine();
+
+        read_file(f);
+        print(n->racine);
+
+        fclose(f);
+    }
+
 
     /*
     mkdir(dupliquer_char_s("Cours"));
