@@ -6,17 +6,13 @@
 
 // Variable globale
 
-char * dupliquer_char_s(const char * s){
-    char *res = malloc(strlen(s) * sizeof (char));
-    for(size_t i=0;i<strlen(s);i++){
-        res[i] = s[i];
-    }
-    return res;
-}
-
 noeud * n = NULL;
 
 // Test validité du chemin
+
+bool est_absolut(char * c){
+    return c[0] == '/';
+}
 
 bool test_validite_chemin(char * c){
     //Verifie que la chaine n'est pas vide, ne commence pas par "/" et ne termine pas par "/"

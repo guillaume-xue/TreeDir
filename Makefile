@@ -1,21 +1,29 @@
 CC = gcc
 CFLAGS = -Wall
 DEPS = Treedir.h
-EXEC = main
+EXEC = Treedir
+FOL = out/
+MAIN = main/
 
 all : $(EXEC)
 
-Treedir.o : Treedir.c $(DEPS)
-	$(CC) $(CFLAGS) -c Treedir.c
+out :
+	mkdir $(FOL)
 
-readFile.o : readFile.c $(DEPS)
-	$(CC) $(CFLAGS) -c readFile.c
+Treedir.o : $(MAIN)Treedir.c $(MAIN)$(DEPS)
+	$(CC) $(CFLAGS) -c $(MAIN)Treedir.c
 
-main.o : main.c $(DEPS)
-	$(CC) $(CFLAGS) -c main.c
+readFile.o : $(MAIN)readFile.c $(MAIN)$(DEPS)
+	$(CC) $(CFLAGS) -c $(MAIN)readFile.c
 
-$(EXEC) : main.o Treedir.o readFile.o
-	$(CC) $(CFLAGS) -o $(EXEC) Treedir.o readFile.o main.o
+main.o : $(MAIN)main.c $(MAIN)$(DEPS)
+	$(CC) $(CFLAGS) -c $(MAIN)main.c
+
+move:
+	mv *.o out
+
+$(EXEC) : out main.o Treedir.o readFile.o move
+	$(CC) $(CFLAGS) -o $(EXEC) $(FOL)Treedir.o $(FOL)readFile.o $(FOL)main.o
 
 clean :
-	rm -rf $(EXEC) *.o
+	rm -rf $(EXEC) $(FOL)

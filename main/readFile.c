@@ -3,6 +3,14 @@
 #include <stdlib.h>
 #include "Treedir.h"
 
+char * dupliquer_char_s(const char * s){
+    char *res = malloc(strlen(s) * sizeof (char));
+    for(size_t i=0;i<strlen(s);i++){
+        res[i] = s[i];
+    }
+    return res;
+}
+
 void make_cmd(char * cmd, char * chem1, char * chem2){
     if(chem1 == NULL && chem2 == NULL){
         if (strcmp(cmd, "cd") == 0){
