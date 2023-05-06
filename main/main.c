@@ -17,11 +17,11 @@ int main(int argc, char* argv[]){
         }
 
         creer_racine();
-
         read_file(f);
         print(n->racine);
 
         fclose(f);
+        rm("\n");
     }
 
 
