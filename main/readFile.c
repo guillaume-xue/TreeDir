@@ -70,5 +70,9 @@ void read_file(FILE * f){
         }
 
         make_cmd(cmd, chem1, chem2);
+        free(chem1);
+        free(chem2);
+        free(cmd);
+        free(strTok);
     }
 }
