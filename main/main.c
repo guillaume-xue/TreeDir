@@ -1,5 +1,6 @@
 #include <printf.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "Treedir.h"
 
 extern noeud * n;
@@ -18,9 +19,10 @@ int main(int argc, char* argv[]){
 
         creer_racine();
         read_file(f);
+        fclose(f);
         print(n->racine);
 
-        fclose(f);
+        
         rm("\n");
     }
 
@@ -74,5 +76,5 @@ int main(int argc, char* argv[]){
 
     print(n->n);
      */
-    return 0;
+    return EXIT_SUCCESS;
 }

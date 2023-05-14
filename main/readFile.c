@@ -47,7 +47,7 @@ void make_cmd(char * cmd, char * chem1, char * chem2){
 }
 
 void read_file(FILE * f){
-    char * c = malloc(sizeof(char));
+    char * c = malloc(50*sizeof(char));
     while(fgets(c, 50, f) != NULL){
 
         int count = 0;

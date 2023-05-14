@@ -63,7 +63,7 @@ void cd_pere(){
 // fonction cd_chem
 
 char *substr(char * src, int pos, int len) {
-    char *dest = (char *) malloc(len+1);
+    char *dest = malloc(len * sizeof(char) + 1);
     strncat(dest,src+pos,len);
     return dest;
 }
@@ -77,7 +77,7 @@ noeud * find_noeud(liste_noeud * l, char * c){
 }
 
 void cd_chem(char * c){
-    //assert(test_validite_chemin(c) && "Chemin avec un format non autorise.");
+    assert(test_validite_chemin(c) && "Chemin avec un format non autorise.");
     noeud * res = NULL;
     const char * sep = "/";
     char * strTok = NULL;
