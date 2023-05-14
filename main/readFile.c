@@ -73,6 +73,5 @@ void read_file(FILE * f){
         free(chem1);
         free(chem2);
         free(cmd);
-        free(strTok);
     }
 }

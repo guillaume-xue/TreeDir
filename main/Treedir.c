@@ -271,7 +271,9 @@ void cp(char * c1, char * c2){
     cd_chem(dupliquer_char_s(c1));
     noeud * cp = n;
     n = tmp;
-    cd_chem(substr(c2,0, get_last_slash(c2)));
+    if(get_last_slash(c2) != 0){
+        cd_chem(substr(c2,0, get_last_slash(c2)));
+    }
     if (strcmp(substr(c2, 0, 1), "/") == 0){
         mkdir(substr(c2, get_last_slash(c2) + 1, strlen(c2)));
         cd_chem(substr(c2, get_last_slash(c2) + 1,strlen(c2)));
