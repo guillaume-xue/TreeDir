@@ -34,6 +34,9 @@ extern void rm(char * c);
 extern void cp(char * c1, char * c2);
 extern void mv(char * c1, char * c2);
 extern void print(noeud * n);
+extern void print1();
+extern void print_mode_arbre(noeud * n, int x);
+extern void fermeture(noeud * n);
 
 extern void read_file(FILE * f);
 extern char * dupliquer_char_s(const char * s);

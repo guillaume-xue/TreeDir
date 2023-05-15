@@ -4,10 +4,8 @@
 #include "Treedir.h"
 
 char * dupliquer_char_s(const char * s){
-    char *res = malloc(strlen(s) * sizeof (char));
-    for(size_t i=0;i<strlen(s);i++){
-        res[i] = s[i];
-    }
+    char* res = (char*)calloc(strlen(s)+1, sizeof(char));
+    strncpy(res, s, strlen(s) + 1);
     return res;
 }
 
@@ -19,6 +17,8 @@ void make_cmd(char * cmd, char * chem1, char * chem2){
             ls();
         } else if (strcmp(cmd, "pwd") == 0){
             pwd();
+        } else if (strcmp(cmd, "print") == 0){
+            print1();
         }else{
             printf("Commande non trouver.\n");
         }
@@ -47,31 +47,36 @@ void make_cmd(char * cmd, char * chem1, char * chem2){
 }
 
 void read_file(FILE * f){
-    char * c = malloc(50*sizeof(char));
-    while(fgets(c, 50, f) != NULL){
+    char* c = (char*)calloc(100, sizeof(char));
+    const char * sep = " \n";
+    char* cBis = fgets(c, 100, f);
+    while(cBis != NULL){
+        if(*c != '\n' && *c != '\0'){
+            int count = 0;
+            char * cmd = NULL;
+            char * chem1 = NULL;
+            char * chem2 = NULL;
+            char * strTok = NULL;
 
-        int count = 0;
-        char * cmd;
-        char * chem1 = NULL;
-        char * chem2 = NULL;
-
-        const char * sep = " \n";
-        char * strTok = NULL;
-        strTok = strtok(c, sep);
-
-        cmd = dupliquer_char_s(strTok);
-        strTok = strtok(NULL, sep);
-
-        while (strTok != NULL){
-            if (count == 0) chem1 = dupliquer_char_s(strTok);
-            if (count == 1) chem2 = dupliquer_char_s(strTok);
+            strTok = strtok(c, sep);
+            cmd = dupliquer_char_s(strTok);
             strTok = strtok(NULL, sep);
-            count++;
-        }
 
-        make_cmd(cmd, chem1, chem2);
-        free(chem1);
-        free(chem2);
-        free(cmd);
+            while (strTok != NULL){
+                if (count == 0) chem1 = dupliquer_char_s(strTok);
+                if (count == 1) chem2 = dupliquer_char_s(strTok);
+                strTok = strtok(NULL, sep);
+                count++;
+            }
+
+            make_cmd(cmd, chem1, chem2);
+            free(chem1);
+            free(chem2);
+            free(cmd);
+            free(strTok);
+        }
+        cBis = fgets(c, 100, f);
     }
+    free(c);
+    free(cBis);
 }

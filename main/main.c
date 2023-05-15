@@ -19,10 +19,12 @@ int main(int argc, char* argv[]){
 
         creer_racine();
         read_file(f);
+        
+        //print(n->racine);
+        print_mode_arbre(n->racine, 0);
         fclose(f);
-        print(n->racine);
-
-        rm("\n");
+        fermeture(n->racine);
+        // rm("\n");
     }
 
 
