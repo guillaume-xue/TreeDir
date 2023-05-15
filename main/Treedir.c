@@ -303,7 +303,15 @@ bool verif_arbo(noeud * n_a_supp, noeud * n_actuel){
 void cp_no(noeud * n1, noeud * n2);
 
 void cp_succ(liste_noeud * n, liste_noeud * l){
-
+    liste_noeud * tmp = l;
+    liste_noeud * tmpBis = n;
+    while (tmp != NULL)
+    {
+        cp_no(tmpBis->no, tmp->no);
+        tmp = tmp->succ;
+        tmpBis = tmpBis->succ;
+    }
+    
 }
 
 void cp_no(noeud * n1, noeud * n2){
@@ -313,11 +321,10 @@ void cp_no(noeud * n1, noeud * n2){
         creer_fils(n1, tmp->no->nom, tmp->no->est_dossier);
         tmp = tmp->succ;
     }
-    tmp = n2->fils;
-    liste_noeud * tmpBis = n1->fils;
-    while(tmp != NULL){
-        cp_no(tmpBis->no, tmp->no);
+    if(n1->fils != NULL){
+        cp_succ(n1->fils, n2->fils);
     }
+    
 }
 
 void cp(char * c1, char * c2){

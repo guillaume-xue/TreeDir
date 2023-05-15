@@ -21,7 +21,7 @@ int main(int argc, char* argv[]){
         read_file(f);
         
         //print(n->racine);
-        print_mode_arbre(n->racine, 0);
+        //print_mode_arbre(n->racine, 0);
         fclose(f);
         fermeture(n->racine);
         // rm("\n");
