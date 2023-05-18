@@ -73,9 +73,9 @@ noeud * find_noeud(liste_noeud * l, char * c){
 void cd_chem(char * c){
     assert(test_validite_chemin(c) && "Chemin avec un format non autorise.");
 
-    char * str = malloc(strlen(c) * sizeof (char));
-    memmove(str, c, strlen(c) * sizeof (char));
-    noeud * curr = NULL;
+    char * str = malloc(strlen(c) * sizeof (char) + 1);
+    memmove(str, c, strlen(c) * sizeof (char) + 1);
+    noeud * res = NULL;
     const char * sep = "/";
     char * strTok = NULL;
 
