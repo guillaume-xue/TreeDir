@@ -27,7 +27,6 @@ int main(int argc, char* argv[]){
         // rm("\n");
     }
 
-
     /*
     mkdir(dupliquer_char_s("Cours"));
     cd_chem(dupliquer_char_s("Cours"));

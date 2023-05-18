@@ -10,10 +10,6 @@ noeud * n = NULL;
 
 // Test validité du chemin
 
-bool est_absolut(char * c){
-    return c[0] == '/';
-}
-
 bool verif_last_case(char * c){
     for (char * i = c; *i != '\0'; i++)
     {
@@ -48,15 +44,11 @@ void creer_racine(){
 
 void print_fils(liste_noeud * f){
     printf("%s\n", f->no->nom);
-    if(f->succ != NULL){
-        print_fils(f->succ);
-    }
+    if(f->succ != NULL) print_fils(f->succ);
 }
 
 void ls(){
-    if(n->fils != NULL){
-        print_fils(n->fils);
-    }
+    if(n->fils != NULL) print_fils(n->fils);
 }
 
 // fonction cd
@@ -83,10 +75,7 @@ char *substr(char * src, int pos, int len) {
 }
 
 noeud * find_noeud(liste_noeud * l, char * c){
-    if (strcmp(l->no->nom, c) == 0){
-        
-        return l->no;
-    }
+    if (strcmp(l->no->nom, c) == 0) return l->no;
     if (l->succ != NULL) return find_noeud(l->succ, c);
     return NULL;
 }
@@ -98,11 +87,7 @@ void cd_chem(char * c){
     const char * sep = "/";
     char * strTok = NULL;
 
-    char * tmpFree = substr(c,0,1);
-    if (strcmp(tmpFree, sep) == 0){
-        cd_racine();
-    }
-    free(tmpFree);
+    if (*c == *sep) cd_racine();    // si chemin absolut
 
     res = n;
     strTok = strtok(c, sep);
@@ -110,12 +95,8 @@ void cd_chem(char * c){
         res = find_noeud(res->fils,strTok);
         strTok = strtok(NULL, sep);
     }
-    if(strTok != NULL && res->fils == NULL){
-        assert(false && "Erreur : Le chemin indique n existe pas.");
-    }
-    if(strTok == NULL && !res->est_dossier){
-        assert(false && "Erreur : Le chemin indique n est pas un dossier.");
-    }
+    if(strTok != NULL && res->fils == NULL) assert(false && "Erreur : Le chemin indique n'existe pas.");
+    if(strTok == NULL && !res->est_dossier) assert(false && "Erreur : Le chemin indique n'est pas un dossier.");
     n = res;
 }
 
@@ -131,6 +112,7 @@ void pwd_fils(noeud * n){
 void pwd(){
     if(n == n->racine) printf("/"); // affiche juste "/" si c'est la racine
     pwd_fils(n);
+    printf("\n");
 }
 
 // Verifie s'il y'a un duplicata de nom
@@ -338,8 +320,7 @@ void cp(char * c1, char * c2){
 
     noeud * cp = n;
     n = tmp;
-    
-    
+
     tmpTwo = substr(c2,0,1);
     if(*tmpTwo == '/'){
         cd_racine();
