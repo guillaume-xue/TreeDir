@@ -75,7 +75,7 @@ void cd_chem(char * c){
 
     char * str = malloc(strlen(c) * sizeof (char) + 1);
     memmove(str, c, strlen(c) * sizeof (char) + 1);
-    noeud * res = NULL;
+    noeud * curr = NULL;
     const char * sep = "/";
     char * strTok = NULL;
 
@@ -179,7 +179,7 @@ bool have_slash(char * c){
 bool verif_arbo(noeud * n_a_supp, noeud * n_actuel){    // Verifie si deux arborescence se superpose
     noeud * tmp = n_a_supp;
     while (tmp != tmp->racine){
-        assert(n_actuel != tmp && "");
+        assert(n_actuel != tmp && "Le chemin actuel se superpose avec le chemin à copier/supprimer");
         tmp = tmp->pere;
     }
     return true;
@@ -273,10 +273,10 @@ void cp(char * c1, char * c2){
     noeud * curr = n;
     char * name = get_last_no_name(c2);
     cd_chem(c1);
-
+    
     noeud * cp = n;
     n = curr;
-
+    assert(verif_arbo(curr, cp));
     char * chem2;
     chem2 = dupliquer_char_s(c2);
 
