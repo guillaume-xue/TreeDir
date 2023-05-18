@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "Treedir.h"
 
 char * dupliquer_char_s(const char * s){
@@ -20,7 +21,7 @@ void make_cmd(char * cmd, char * chem1, char * chem2){
         } else if (strcmp(cmd, "print") == 0){
             print1();
         }else{
-            printf("Commande non trouver.\n");
+            assert(false && "Commande non trouver.");
         }
     }else if(chem2 == NULL){
         if (strcmp(cmd, "cd") == 0){
@@ -33,7 +34,7 @@ void make_cmd(char * cmd, char * chem1, char * chem2){
         }else if (strcmp(cmd, "rm") == 0){
             rm(chem1);
         }else{
-            printf("Commande non trouver.\n");
+            assert(false && "Commande non trouver.");
         }
     }else{
         if (strcmp(cmd, "cp") == 0){
@@ -41,9 +42,10 @@ void make_cmd(char * cmd, char * chem1, char * chem2){
         } else if (strcmp(cmd, "mv") == 0){
             mv(chem1, chem2);
         } else {
-            printf("Commande non trouver.\n");
+            assert(false && "Commande non trouver.");
         }
     }
+
 }
 
 void read_file(FILE * f){
