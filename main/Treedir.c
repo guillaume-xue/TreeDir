@@ -11,8 +11,7 @@ noeud * n = NULL;
 // Test validité du chemin
 
 bool verif_last_case(char * c){
-    for (char * i = c; *i != '\0'; i++)
-    {
+    for (char * i = c; *i != '\0'; i++){
         if(*i == '/' && *(i+1) == '\0'){
             return true;
         }
@@ -76,22 +75,22 @@ void cd_chem(char * c){
 
     char * str = malloc(strlen(c) * sizeof (char));
     memmove(str, c, strlen(c) * sizeof (char));
-    noeud * res = NULL;
+    noeud * curr = NULL;
     const char * sep = "/";
     char * strTok = NULL;
 
     if (*str == *sep) cd_racine();    // si chemin absolut
 
-    res = n;
+    curr = n;
     strTok = strtok(str, sep);
-    while (strTok != NULL && res->fils != NULL){
-        res = find_noeud(res->fils,strTok);
+    while (strTok != NULL && curr->fils != NULL){
+        curr = find_noeud(curr->fils, strTok);
         strTok = strtok(NULL, sep);
     }
     free(str);
-    if(strTok != NULL && res->fils == NULL) assert(false && "Erreur : Le chemin indique n'existe pas.");
-    if(strTok == NULL && !res->est_dossier) assert(false && "Erreur : Le chemin indique n'est pas un dossier.");
-    n = res;
+    if(strTok != NULL && curr->fils == NULL) assert(false && "Erreur : Le chemin indique n'existe pas.");
+    if(strTok == NULL && !curr->est_dossier) assert(false && "Erreur : Le chemin indique n'est pas un dossier.");
+    n = curr;
 }
 
 // fonction pwd
@@ -170,14 +169,6 @@ void touch(char * c){
 
 // fonction rm chem
 
-int get_last_slash(char * c){
-    int i = strlen(c);
-    while (c[i] != '/' && i != 0){
-        i--;
-    }
-    return i;
-}
-
 bool have_slash(char * c){
     for (char* tmp = c; *tmp != '\0' ; tmp++){
         if(*tmp == '/') return true;
@@ -185,14 +176,31 @@ bool have_slash(char * c){
     return false;
 }
 
+bool verif_arbo(noeud * n_a_supp, noeud * n_actuel){    // Verifie si deux arborescence se superpose
+    noeud * tmp = n_a_supp;
+    while (tmp != tmp->racine){
+        assert(n_actuel != tmp && "");
+        tmp = tmp->pere;
+    }
+    return true;
+}
+
+int get_last_slash(char * c){
+    int pos = strlen(c);
+    while (c[pos] != '/' && pos != 0){
+        pos--;
+    }
+    return pos;
+}
+
 char *get_last_no_name(char * c){
-    char * res = malloc(strlen(c) * sizeof (c) + 1);
+    char * name = malloc(strlen(c) * sizeof (c) + 1);
     size_t length = strlen(c);
     size_t start = get_last_slash(c) + 1;
     if (have_slash(c) == 0) start--;
     size_t cutLength = length - start;
-    memmove(res, c + start, cutLength + 1);
-    return res;
+    memmove(name, c + start, cutLength + 1);
+    return name;
 }
 
 void rm_no(noeud * no);
@@ -232,37 +240,19 @@ void rm_no(noeud * no){
     free(no);
 }
 
-bool verif_arbo(noeud * n_a_supp, noeud * n_actuel);
-
 void rm(char * c){
     assert(test_validite_chemin(c) && "Chemin avec un format non autorise.");
+
     noeud * curr = n;    // noeud de départ
     cd_chem(c);
     noeud * rm = n;     // noeud qui précède le fichier/dossier à supprimer
 
+    if(curr == rm) assert(verif_arbo(curr, rm) == 0 && "Chemin avec un format non autorise.");
+
     char * rm_name = get_last_no_name(c);
-
-    if(curr != rm){
-        if(verif_arbo(curr, rm)){
-            rm_cut(rm->pere, rm_name);
-            free(rm_name);
-        }
-    }else{
-        rm_cut(rm->pere, rm_name);
-        free(rm_name);
-    }
+    rm_cut(rm->pere, rm_name);
+    free(rm_name);
     n = curr;
-}
-
-// Verifie si deux arborescence se superpose
-
-bool verif_arbo(noeud * n_a_supp, noeud * n_actuel){
-    noeud * tmp = n_a_supp;
-    while (tmp != tmp->racine){
-        assert(n_actuel != tmp && "");
-        tmp = tmp->pere;
-    }
-    return true;
 }
 
 // fonction cp chem1 chem2
@@ -276,67 +266,44 @@ char *substr(char * src, int pos, int len) {
     return NULL;
 }
 
-void cp_no(noeud * n1, noeud * n2);
-
-void cp_succ(liste_noeud * n, liste_noeud * l){
-    liste_noeud * tmp = l;
-    liste_noeud * tmpBis = n;
-    while (tmp != NULL){
-        cp_no(tmpBis->no, tmp->no);
-        tmp = tmp->succ;
-        tmpBis = tmpBis->succ;
-    }
-}
-
-void cp_no(noeud * n1, noeud * n2){
-    liste_noeud * tmp = n2->fils;
-    while(tmp != NULL){
-        creer_fils(n1, tmp->no->nom, tmp->no->est_dossier);
-        tmp = tmp->succ;
-    }
-    if(n1->fils != NULL) cp_succ(n1->fils, n2->fils);
-    
-}
-
 void cp(char * c1, char * c2){
     assert(test_validite_chemin(c1) && "Chemin avec un format non autorise. (cp c1)");
     assert(test_validite_chemin(c2) && "Chemin avec un format non autorise. (cp c2)");
-    noeud * tmp = n;
-    char * tmpOne = NULL;
-    char * tmpTwo = dupliquer_char_s(c1);
-    cd_chem(tmpTwo);
-    free(tmpTwo);
+
+    noeud * curr = n;
+    char * name = get_last_no_name(c2);
+    cd_chem(c1);
 
     noeud * cp = n;
-    n = tmp;
+    n = curr;
 
-    tmpTwo = substr(c2,0,1);
-    if(*tmpTwo == '/'){
+    char * chem2;
+    chem2 = dupliquer_char_s(c2);
+
+    if(*chem2 == '/'){
         cd_racine();
-        free(tmpTwo);
+        free(chem2);
         if(get_last_slash(c2) == 0){
-            tmpTwo = NULL;
+            chem2 = NULL;
         }else{
-            tmpTwo = substr(c2,1,get_last_slash(c2));
+            chem2 = substr(c2, 1, get_last_slash(c2));
         }
-        tmpOne = substr(c2,get_last_slash(c2)+1,strlen(c2)-get_last_slash(c2)+1);
     }else{
-        free(tmpTwo);
-        tmpTwo = substr(c2,0,get_last_slash(c2));
-        tmpOne = substr(c2,get_last_slash(c2)+1,strlen(c2)-get_last_slash(c2)+1);
+        free(chem2);
+        chem2 = substr(c2, 0, get_last_slash(c2));
     }
 
-    if(tmpTwo != NULL) cd_chem(tmpTwo);
+    if(chem2 != NULL) cd_chem(chem2);
 
-    free(tmpTwo);
-    mkdir(tmpOne);
-    cd_chem(tmpOne);
-    free(tmpOne);
+    mkdir(name);
+    cd_chem(name);
     
     noeud * cl = n;
+    memmove(cl, cp, sizeof (noeud));
+    n = curr;
 
-    cp_no(cl, cp);
-    n = tmp;
+    free(chem2);
+    free(name);
 }
 
 void change_adresse_remove_old(noeud * n1){
@@ -364,8 +331,7 @@ void change_adresse_add_new(noeud * n1, noeud * n2){
         n2->fils = ln;
     }else{
         liste_noeud * tmp = n2->fils;
-        while (tmp->succ != NULL)
-        {
+        while (tmp->succ != NULL){
             tmp = tmp->succ;
         }
         tmp->succ = ln;
@@ -378,30 +344,24 @@ void change_adresse_add_new(noeud * n1, noeud * n2){
 void mv(char * c1, char * c2){
     assert(test_validite_chemin(c1) && "Chemin avec un format non autorise. (mv c1)");
     assert(test_validite_chemin(c2) && "Chemin avec un format non autorise. (mv c2)");
-    noeud * res = NULL;
-    noeud * res2 = NULL;
     const char * sep = "/";
     char * strTok = NULL;
-    res = n;
+    noeud * res1 = NULL;
+    noeud * res2 = NULL;
+    res1 = n;
     res2 = n;
 
-    char * tmp = substr(c1,0,1);
-
-    if (strcmp(tmp, sep) == 0){
-        res = n->racine;
-    }
-    free(tmp);
-
-    tmp = substr(c2,0,1);
-    if (strcmp(tmp, sep) == 0){
-        res2 = n->racine;
-    }
-    free(tmp);
+    char * chem1 = dupliquer_char_s(c1);
+    char * chem2 = dupliquer_char_s(c2);
+    if (*chem1 == *sep) res1 = n->racine;
+    if (*chem2 == *sep) res2 = n->racine;
+    free(chem1);
+    free(chem2);
 
     strTok = strtok(c1, sep);
-    while (strTok != NULL && res->fils != NULL){
-        res = find_noeud(res->fils,strTok);
-        assert(res != NULL && "Ce chemin est innacessible depuis l'emplacement actuel (mv1)");
+    while (strTok != NULL && res1->fils != NULL){
+        res1 = find_noeud(res1->fils, strTok);
+        assert(res1 != NULL && "Ce chemin est innacessible depuis l'emplacement actuel (mv1)");
         strTok = strtok(NULL, sep);
     }
     strTok = strtok(c2, sep);
@@ -410,7 +370,7 @@ void mv(char * c1, char * c2){
         assert(res2 != NULL && "Ce chemin est innacessible depuis l'emplacement actuel (mv2)");
         strTok = strtok(NULL, sep);
     }
-    change_adresse_add_new(res, res2);
+    change_adresse_add_new(res1, res2);
 }
 
 // fonction print
