@@ -10,10 +10,6 @@ noeud * n = NULL;
 
 // Test validité du chemin
 
-bool est_absolut(char * c){
-    return c[0] == '/';
-}
-
 bool verif_last_case(char * c){
     for (char * i = c; *i != '\0'; i++)
     {
@@ -48,15 +44,11 @@ void creer_racine(){
 
 void print_fils(liste_noeud * f){
     printf("%s\n", f->no->nom);
-    if(f->succ != NULL){
-        print_fils(f->succ);
-    }
+    if(f->succ != NULL) print_fils(f->succ);
 }
 
 void ls(){
-    if(n->fils != NULL){
-        print_fils(n->fils);
-    }
+    if(n->fils != NULL) print_fils(n->fils);
 }
 
 // fonction cd
@@ -83,39 +75,31 @@ char *substr(char * src, int pos, int len) {
 }
 
 noeud * find_noeud(liste_noeud * l, char * c){
-    if (strcmp(l->no->nom, c) == 0){
-        
-        return l->no;
-    }
+    if (strcmp(l->no->nom, c) == 0) return l->no;
     if (l->succ != NULL) return find_noeud(l->succ, c);
     return NULL;
 }
 
 void cd_chem(char * c){
     assert(test_validite_chemin(c) && "Chemin avec un format non autorise.");
-
+    char * str = dupliquer_char_s(c);
     noeud * res = NULL;
     const char * sep = "/";
     char * strTok = NULL;
 
-    char * tmpFree = substr(c,0,1);
-    if (strcmp(tmpFree, sep) == 0){
-        cd_racine();
-    }
-    free(tmpFree);
+    if (*str == *sep) cd_racine(); // si chemin absolut
 
     res = n;
-    strTok = strtok(c, sep);
+    strTok = strtok(str, sep);
     while (strTok != NULL && res->fils != NULL){
         res = find_noeud(res->fils,strTok);
+        if(res == NULL) break;
         strTok = strtok(NULL, sep);
     }
-    if(strTok != NULL && res->fils == NULL){
-        assert(false && "Erreur : Le chemin indique n existe pas.");
-    }
-    if(strTok == NULL && !res->est_dossier){
-        assert(false && "Erreur : Le chemin indique n est pas un dossier.");
-    }
+    free(str);
+    if(strTok != NULL && res == NULL) assert(false && "Erreur : Le chemin indique n'est pas accessible depuis le noeud actuel.");
+    if(strTok != NULL && res->fils == NULL) assert(false && "Erreur : Le chemin indique n'existe pas.");
+    if(strTok == NULL && !res->est_dossier) assert(false && "Erreur : Le chemin indique n'est pas un dossier.");
     n = res;
 }
 
@@ -131,6 +115,7 @@ void pwd_fils(noeud * n){
 void pwd(){
     if(n == n->racine) printf("/"); // affiche juste "/" si c'est la racine
     pwd_fils(n);
+    printf("\n");
 }
 
 // Verifie s'il y'a un duplicata de nom
@@ -265,23 +250,20 @@ void rm(char * c){
     cd_chem(tmpOne);
     free(tmpOne);
 
-    noeud * rm = n; // noeud qui précède le fichier/dossier à supprimer
+    noeud * rm = n; // noeud du dossier/fichier à supprimer
 
     char * tmpTwo = NULL;
     if(have_slash(c)){
         tmpTwo = substr(c, get_last_slash(c)+1, strlen(c));
     }else{
-        tmpTwo = substr(c, get_last_slash(c), strlen(c));
+        tmpTwo = substr(c, 0, strlen(c));
     }
-    if(tmp != rm){
-        if(verif_arbo(tmp, rm)){
-            rm_cut(rm->pere, tmpTwo);
-            free(tmpTwo);
-        }
-    }else{
-        rm_cut(rm->pere, tmpTwo);
-        free(tmpTwo);
-    }
+
+    assert(verif_arbo(tmp, rm) && "Les deux chemins se superpose (rm)");
+
+    rm_cut(rm->pere, tmpTwo);
+    free(tmpTwo);
+
     n = tmp;
 }
 
@@ -290,8 +272,10 @@ void rm(char * c){
 bool verif_arbo(noeud * n_a_supp, noeud * n_actuel){
     noeud * tmp = n_a_supp;
     while (tmp != tmp->racine)
-    {
-        assert(n_actuel != tmp && "");
+    {   
+        if(n_actuel == tmp){
+            return false;
+        }
         tmp = tmp->pere;
     }
     return true;
@@ -333,39 +317,50 @@ void cp(char * c1, char * c2){
     noeud * tmp = n;
     char * tmpOne = NULL;
     char * tmpTwo = dupliquer_char_s(c1);
+    printf("\ntest 1\n");
     cd_chem(tmpTwo);
     free(tmpTwo);
-
+    printf("\ntest 2\n");
     noeud * cp = n;
     n = tmp;
     
     
-    tmpTwo = substr(c2,0,1);
+    tmpTwo = dupliquer_char_s(c2);
     if(*tmpTwo == '/'){
         cd_racine();
-        free(tmpTwo);
-        if(get_last_slash(c2) == 0){
+        if(get_last_slash(tmpTwo) == 0 && have_slash(tmpTwo)){
+            free(tmpTwo);
             tmpTwo = NULL;
+            tmpOne = substr(c2,1,strlen(c2)+1);
         }else{
-            tmpTwo = substr(c2,1,get_last_slash(c2));
-        }
-        tmpOne = substr(c2,get_last_slash(c2)+1,strlen(c2)-get_last_slash(c2)+1);
+            free(tmpTwo);
+            tmpTwo = substr(c2,1,get_last_slash(c2)-1);
+            tmpOne = substr(c2,get_last_slash(c2)+1,strlen(c2)-get_last_slash(c2)+1);
+        } 
     }else{
-        free(tmpTwo);
-        tmpTwo = substr(c2,0,get_last_slash(c2));
-        tmpOne = substr(c2,get_last_slash(c2)+1,strlen(c2)-get_last_slash(c2)+1);
+        if(have_slash(tmpTwo)){
+            free(tmpTwo);
+            tmpTwo = substr(c2,0,get_last_slash(c2));
+            tmpOne = substr(c2,get_last_slash(c2)+1,strlen(c2)-get_last_slash(c2)+1);
+        }else{
+            free(tmpTwo);
+            tmpTwo = NULL;
+            tmpOne = substr(c2,0,strlen(c2)+1);      
+        }
+        
     }
     if(tmpTwo != NULL){
         printf("\nTest %s\n",tmpTwo);
         cd_chem(tmpTwo);
     }
     free(tmpTwo);
-
-    printf("\nTest 3%s\n",tmpOne);
+    noeud * cmp = n;
+    assert(verif_arbo(cmp, cp) && "Les deux chemins se superpose (cp)");
+    printf("\ntest 3\n");
     mkdir(tmpOne);
     cd_chem(tmpOne);
     free(tmpOne);
-    
+    printf("\ntest 4\n");
     noeud * cl = n;
 
     cp_no(cl, cp);
