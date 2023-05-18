@@ -6,7 +6,7 @@
 extern noeud * n;
 
 int main(int argc, char* argv[]){
-
+    /*
     if (argc == 2){
 
         char * filename = argv[1];
@@ -27,7 +27,23 @@ int main(int argc, char* argv[]){
         // rm("\n");
     }
 
+    */
+
     /*
+    creer_racine();
+    mkdir("A1");
+    mkdir("A2");
+    cd_chem("A1");
+    mkdir("A5");
+    cd_chem("A5");
+    print(n->racine);
+    printf("\n");
+    cd_racine();
+    rm("A1");
+    print(n->racine);
+     */
+
+    creer_racine();
     mkdir(dupliquer_char_s("Cours"));
     cd_chem(dupliquer_char_s("Cours"));
     mkdir(dupliquer_char_s("ProjetC"));
@@ -54,7 +70,6 @@ int main(int argc, char* argv[]){
 
     cp(dupliquer_char_s("/Cours/ProjetC"), dupliquer_char_s("CopieProjetC"));
     print(n->racine);
-    */
 
 
     /*

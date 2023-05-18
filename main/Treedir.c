@@ -65,15 +65,6 @@ void cd_pere(){
 
 // fonction cd_chem
 
-char *substr(char * src, int pos, int len) {
-    if(len > 0){
-        char *dest = calloc(len+1, sizeof(char));
-        strncat(dest,src+pos,len);
-        return dest;
-    }
-    return NULL;
-}
-
 noeud * find_noeud(liste_noeud * l, char * c){
     if (strcmp(l->no->nom, c) == 0) return l->no;
     if (l->succ != NULL) return find_noeud(l->succ, c);
@@ -83,18 +74,21 @@ noeud * find_noeud(liste_noeud * l, char * c){
 void cd_chem(char * c){
     assert(test_validite_chemin(c) && "Chemin avec un format non autorise.");
 
+    char * str = malloc(strlen(c) * sizeof (char));
+    memmove(str, c, strlen(c) * sizeof (char));
     noeud * res = NULL;
     const char * sep = "/";
     char * strTok = NULL;
 
-    if (*c == *sep) cd_racine();    // si chemin absolut
+    if (*str == *sep) cd_racine();    // si chemin absolut
 
     res = n;
-    strTok = strtok(c, sep);
+    strTok = strtok(str, sep);
     while (strTok != NULL && res->fils != NULL){
         res = find_noeud(res->fils,strTok);
         strTok = strtok(NULL, sep);
     }
+    free(str);
     if(strTok != NULL && res->fils == NULL) assert(false && "Erreur : Le chemin indique n'existe pas.");
     if(strTok == NULL && !res->est_dossier) assert(false && "Erreur : Le chemin indique n'est pas un dossier.");
     n = res;
@@ -119,8 +113,7 @@ void pwd(){
 
 bool verif_existe_dupli(noeud * n, char * c){
     liste_noeud * tmp = n->fils;
-    while (tmp != NULL)
-    {
+    while (tmp != NULL){
         if(strcmp(tmp->no->nom, c) == 0){
             return true;
         }
@@ -143,7 +136,7 @@ noeud * creer_noeud(noeud * pere, char * c, bool b){
     return res;
 }
 
-liste_noeud * creer_liste_noeud(noeud * pere, char * c, bool b){
+liste_noeud * creer_list_noeud(noeud * pere, char * c, bool b){
     liste_noeud * res = calloc(1, sizeof (liste_noeud));
     res->no = creer_noeud(pere, c, b);
     res->succ = NULL;
@@ -152,14 +145,14 @@ liste_noeud * creer_liste_noeud(noeud * pere, char * c, bool b){
 
 void creer_fils(noeud * no, char * c, bool b){
     if (no->fils == NULL){
-        no->fils = creer_liste_noeud(no, c, b);
+        no->fils = creer_list_noeud(no, c, b);
     }else{
         assert(!verif_existe_dupli(no, c) && "Il est existe deja un dossier ou fichier avec ce nom.");
         liste_noeud * tmp = no->fils;
         while (tmp->succ != NULL){
             tmp = tmp->succ;
         }
-        tmp->succ = creer_liste_noeud(no, c, b);
+        tmp->succ = creer_list_noeud(no, c, b);
     }
 }
 
@@ -186,14 +179,20 @@ int get_last_slash(char * c){
 }
 
 bool have_slash(char * c){
-    for (char* tmp = c; *tmp != '\0' ; tmp++)
-    {
-        if(*tmp == '/'){
-            return true;
-        }
+    for (char* tmp = c; *tmp != '\0' ; tmp++){
+        if(*tmp == '/') return true;
     }
-    
     return false;
+}
+
+char *get_last_no_name(char * c){
+    char * res = malloc(strlen(c) * sizeof (c) + 1);
+    size_t length = strlen(c);
+    size_t start = get_last_slash(c) + 1;
+    if (have_slash(c) == 0) start--;
+    size_t cutLength = length - start;
+    memmove(res, c + start, cutLength + 1);
+    return res;
 }
 
 void rm_no(noeud * no);
@@ -220,8 +219,6 @@ void rm_cut(noeud * no, char * c){
     }
 }
 
-
-
 void rm_succ(liste_noeud * l){
     if(l != NULL){
         rm_succ(l->succ);
@@ -231,9 +228,7 @@ void rm_succ(liste_noeud * l){
 }
 
 void rm_no(noeud * no){
-    if(no->fils != NULL){
-        rm_succ(no->fils);
-    }
+    if(no->fils != NULL) rm_succ(no->fils);
     free(no);
 }
 
@@ -241,71 +236,65 @@ bool verif_arbo(noeud * n_a_supp, noeud * n_actuel);
 
 void rm(char * c){
     assert(test_validite_chemin(c) && "Chemin avec un format non autorise.");
-    noeud * tmp = n; // noeud de départ
-    
-    char * tmpOne = dupliquer_char_s(c);
-    cd_chem(tmpOne);
-    free(tmpOne);
+    noeud * curr = n;    // noeud de départ
+    cd_chem(c);
+    noeud * rm = n;     // noeud qui précède le fichier/dossier à supprimer
 
-    noeud * rm = n; // noeud qui précède le fichier/dossier à supprimer
+    char * rm_name = get_last_no_name(c);
 
-    char * tmpTwo = NULL;
-    if(have_slash(c)){
-        tmpTwo = substr(c, get_last_slash(c)+1, strlen(c));
-    }else{
-        tmpTwo = substr(c, get_last_slash(c), strlen(c));
-    }
-    if(tmp != rm){
-        if(verif_arbo(tmp, rm)){
-            rm_cut(rm->pere, tmpTwo);
-            free(tmpTwo);
+    if(curr != rm){
+        if(verif_arbo(curr, rm)){
+            rm_cut(rm->pere, rm_name);
+            free(rm_name);
         }
     }else{
-        rm_cut(rm->pere, tmpTwo);
-        free(tmpTwo);
+        rm_cut(rm->pere, rm_name);
+        free(rm_name);
     }
-    n = tmp;
+    n = curr;
 }
 
 // Verifie si deux arborescence se superpose
 
 bool verif_arbo(noeud * n_a_supp, noeud * n_actuel){
     noeud * tmp = n_a_supp;
-    while (tmp != tmp->racine)
-    {
+    while (tmp != tmp->racine){
         assert(n_actuel != tmp && "");
         tmp = tmp->pere;
     }
     return true;
-
 }
 
 // fonction cp chem1 chem2
+
+char *substr(char * src, int pos, int len) {
+    if(len > 0){
+        char *dest = calloc(len+1, sizeof(char));
+        strncat(dest,src+pos,len);
+        return dest;
+    }
+    return NULL;
+}
 
 void cp_no(noeud * n1, noeud * n2);
 
 void cp_succ(liste_noeud * n, liste_noeud * l){
     liste_noeud * tmp = l;
     liste_noeud * tmpBis = n;
-    while (tmp != NULL)
-    {
+    while (tmp != NULL){
         cp_no(tmpBis->no, tmp->no);
         tmp = tmp->succ;
         tmpBis = tmpBis->succ;
     }
-    
 }
 
 void cp_no(noeud * n1, noeud * n2){
     liste_noeud * tmp = n2->fils;
-    if(n2->fils)
     while(tmp != NULL){
         creer_fils(n1, tmp->no->nom, tmp->no->est_dossier);
         tmp = tmp->succ;
     }
-    if(n1->fils != NULL){
-        cp_succ(n1->fils, n2->fils);
-    }
+    if(n1->fils != NULL) cp_succ(n1->fils, n2->fils);
     
 }
 
@@ -336,13 +325,10 @@ void cp(char * c1, char * c2){
         tmpTwo = substr(c2,0,get_last_slash(c2));
         tmpOne = substr(c2,get_last_slash(c2)+1,strlen(c2)-get_last_slash(c2)+1);
     }
-    if(tmpTwo != NULL){
-        printf("\nTest %s\n",tmpTwo);
-        cd_chem(tmpTwo);
-    }
-    free(tmpTwo);
 
-    printf("\nTest 3%s\n",tmpOne);
+    if(tmpTwo != NULL) cd_chem(tmpTwo);
+
+    free(tmpTwo);
     mkdir(tmpOne);
     cd_chem(tmpOne);
     free(tmpOne);
@@ -425,8 +411,6 @@ void mv(char * c1, char * c2){
         strTok = strtok(NULL, sep);
     }
     change_adresse_add_new(res, res2);
-    // cp(c1, c2);
-    // rm(c1);
 }
 
 // fonction print
