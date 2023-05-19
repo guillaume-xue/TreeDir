@@ -262,8 +262,6 @@ void rm_cut(noeud * no, char * c){
     }
 }
 
-
-
 void rm_succ(liste_noeud * l){
     if(l != NULL){
         rm_succ(l->succ);
@@ -369,9 +367,8 @@ void cp(char * c1, char * c2){
         assert(false);
     }
 
-    noeud * tmp = n;
-    
-    char * tmpTwo = NULL;
+    noeud * curr = n;
+
     if(have_slash(c1)){
         if(get_last_slash(c1) != 0){
             char * tmpOne = substr(c1, 0, get_last_slash(c1));
@@ -380,19 +377,20 @@ void cp(char * c1, char * c2){
         }else{
             cd_racine();
         }
-        tmpTwo = substr(c1, get_last_slash(c1)+1, strlen(c1));
-    }else{
-        tmpTwo = substr(c1, 0, strlen(c1));
     }
+
+    char * chem1 = NULL;
+    chem1 = get_last_no_name(c1);
     noeud * cp = n;
-    noeud * verifExist = find_noeud(cp->fils, tmpTwo);
+    noeud * verifExist = find_noeud(cp->fils, chem1);
+    free(chem1);
+
     if(verifExist == NULL){
         printf("L'emplacement à copier n'est pas accessible. (%s)\n",c1);
         assert(false);
     }
 
-    n = tmp;
-    free(tmpTwo);
+    n = curr;
 
     if(have_slash(c2)){
         if(get_last_slash(c2) != 0){
@@ -402,10 +400,10 @@ void cp(char * c1, char * c2){
         }else{
             cd_racine();
         }
-        tmpTwo = substr(c2, get_last_slash(c2)+1, strlen(c2));
-    }else{
-        tmpTwo = substr(c2, 0, strlen(c2));
     }
+
+    char * chem2 = NULL;
+    chem2 = get_last_no_name(c2);
     noeud * cl = n;
     
     if(verifExist == cl){
@@ -418,24 +416,22 @@ void cp(char * c1, char * c2){
         }
     }
 
-    if(verif_existe_dupli(cl, tmpTwo)){
+    if(verif_existe_dupli(cl, chem2)){
         printf("Il existe déjà un fichier ou un dossier à ce nom. (%s)\n",c2);
         assert(false);
     }
     
     if(verifExist->est_dossier){
-        mkdir(tmpTwo);
-        cd_chem(tmpTwo);
-        free(tmpTwo);
+        mkdir(chem2);
+        cd_chem(chem2);
         cl = n;
         cp_no(cl, verifExist);
     }else{
-        touch(tmpTwo);
-        free(tmpTwo);
+        touch(chem2);
     }
-    
-    
-    n = tmp;
+
+    free(chem2);
+    n = curr;
 }
 
 void change_adresse_remove_old(noeud * n1){
