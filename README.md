@@ -17,5 +17,5 @@ Ce projet est un programme qui simule les instructions système de manipulation 
 ### Enlever les fichiers générer
 
 ```bath
-   make clear
+   make clean
 ```

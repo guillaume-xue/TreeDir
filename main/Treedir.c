@@ -86,34 +86,35 @@ void cd_chem(char * c){
         printf("Chemin avec un format non autorise. (%s)\n", c);
         assert(false);
     }
-    char * str = dupliquer_char_s(c);
-    noeud * res = NULL;
+    char * str = malloc(strlen(c) * sizeof (char) + 1);
+    memmove(str, c, strlen(c) * sizeof (char) + 1);
+    noeud * curr = NULL;
     const char * sep = "/";
     char * strTok = NULL;
 
-    if (*str == *sep) cd_racine(); // si chemin absolut
+    if (*str == *sep) cd_racine();    // si chemin absolut
 
-    res = n;
+    curr = n;
     strTok = strtok(str, sep);
-    while (strTok != NULL && res->fils != NULL){
-        res = find_noeud(res->fils,strTok);
-        if(res == NULL) break;
+    while (strTok != NULL && curr->fils != NULL){
+        curr = find_noeud(curr->fils, strTok);
+        if(curr == NULL) break;
         strTok = strtok(NULL, sep);
     }
     free(str);
-    if(strTok != NULL && res == NULL){
+    if(strTok != NULL && curr == NULL){
         printf("Erreur : Le chemin indique n'est pas accessible depuis le noeud actuel ou n'existe pas. (%s)\n",c); 
         assert(false);
     } 
-    if(strTok != NULL && res->fils == NULL){
+    if(strTok != NULL && curr->fils == NULL){
         printf("Erreur : Le chemin indique n'existe pas. (%s)\n",c); 
         assert(false);
     } 
-    if(strTok == NULL && !res->est_dossier){
+    if(strTok == NULL && !curr->est_dossier){
         printf("Erreur : Le chemin indique n'est pas un dossier. (%s)\n",c); 
         assert(false);
     } 
-    n = res;
+    n = curr;
 }
 
 // fonction pwd
@@ -135,11 +136,8 @@ void pwd(){
 
 bool verif_existe_dupli(noeud * n, char * c){
     liste_noeud * tmp = n->fils;
-    while (tmp != NULL)
-    {
-        if(strcmp(tmp->no->nom, c) == 0){
-            return true;
-        }
+    while (tmp != NULL){
+        if(strcmp(tmp->no->nom, c) == 0) return true;
         tmp = tmp->succ;
     }
     return false;
@@ -170,12 +168,10 @@ void creer_fils(noeud * no, char * c, bool b){
     if (no->fils == NULL){
         no->fils = creer_liste_noeud(no, c, b);
     }else{
-        if (verif_existe_dupli(no, c))
-        {
+        if (verif_existe_dupli(no, c)){
             printf("Il est existe deja un dossier ou fichier avec ce nom. (%s)\n", c); 
             assert(false);
         }
-        
         liste_noeud * tmp = no->fils;
         while (tmp->succ != NULL){
             tmp = tmp->succ;
@@ -198,8 +194,7 @@ bool verif_char(char * c){
 }
 
 void mkdir(char * c){
-    if (!verif_char(c))
-    {
+    if (!verif_char(c)){
         printf("Nom trop long ou caractère non conforme. (%s)\n", c); 
         assert(false);
     }
@@ -209,8 +204,7 @@ void mkdir(char * c){
 // fonction touch
 
 void touch(char * c){
-    if (!verif_char(c))
-    {
+    if (!verif_char(c)){
         printf("Nom trop long ou caractère non conforme. (%s)\n", c); 
         assert(false);
     }
@@ -218,6 +212,13 @@ void touch(char * c){
 }
 
 // fonction rm chem
+
+bool have_slash(char * c){
+    for (char* tmp = c; *tmp != '\0' ; tmp++){
+        if(*tmp == '/') return true;
+    }
+    return false;
+}
 
 int get_last_slash(char * c){
     int i = strlen(c);
@@ -227,15 +228,14 @@ int get_last_slash(char * c){
     return i;
 }
 
-bool have_slash(char * c){
-    for (char* tmp = c; *tmp != '\0' ; tmp++)
-    {
-        if(*tmp == '/'){
-            return true;
-        }
-    }
-    
-    return false;
+char *get_last_no_name(char * c){
+    char * name = malloc(strlen(c) * sizeof (c) + 1);
+    size_t length = strlen(c);
+    size_t start = get_last_slash(c) + 1;
+    if (have_slash(c) == 0) start--;
+    size_t cutLength = length - start;
+    memmove(name, c + start, cutLength + 1);
+    return name;
 }
 
 void rm_no(noeud * no);
@@ -273,9 +273,7 @@ void rm_succ(liste_noeud * l){
 }
 
 void rm_no(noeud * no){
-    if(no->fils != NULL){
-        rm_succ(no->fils);
-    }
+    if(no->fils != NULL) rm_succ(no->fils);
     free(no);
 }
 
@@ -287,54 +285,47 @@ void rm(char * c){
         assert(false);
     }
 
-    noeud * tmp = n; // noeud de départ
+    noeud * curr = n; // noeud de départ
 
-    char * tmpTwo = NULL;
     if(have_slash(c)){
         if(get_last_slash(c) != 0){
-            char * tmpOne = substr(c, 0, get_last_slash(c));
-            cd_chem(tmpOne);
-            free(tmpOne);
+            char * pre_chem = substr(c, 0, get_last_slash(c));
+            cd_chem(pre_chem);
+            free(pre_chem);
         }else{
             cd_racine();
         }
-        tmpTwo = substr(c, get_last_slash(c)+1, strlen(c));
-    }else{
-        tmpTwo = substr(c, 0, strlen(c));
     }
+
+    char * last_chem = NULL;
+    last_chem = get_last_no_name(c);
 
     noeud * rm = n; // noeud du dossier/fichier à supprimer
     
-    noeud * verifExist = find_noeud(rm->fils, tmpTwo);
+    noeud * verifExist = find_noeud(rm->fils, last_chem);
     if(verifExist == NULL){
         printf("L'emplacement à supprimer n'existe pas ou n'est pas accessible depuis le noeud actuel. (%s)\n",c);
         assert(false);
     }
-    if(tmp != rm){
-        if(!verif_arbo(tmp, verifExist)){
+    if(curr != rm){
+        if(!verif_arbo(curr, verifExist)){
             printf("L'emplacement actuel et le chemin indiqué se superposent. (%s)\n",c);
             assert(false);
         }
         
     }
-    
 
-    rm_cut(rm, tmpTwo);
-    free(tmpTwo);
-
-
-    n = tmp;
+    rm_cut(rm, last_chem);
+    free(last_chem);
+    n = curr;
 }
 
 // Verifie si deux arborescence se superpose
 
 bool verif_arbo(noeud * n_a_supp, noeud * n_actuel){
     noeud * tmp = n_a_supp;
-    while (tmp != tmp->racine)
-    {   
-        if(n_actuel == tmp){
-            return false;
-        }
+    while (tmp != tmp->racine){
+        if(n_actuel == tmp) return false;
         tmp = tmp->pere;
     }
     return true;
@@ -348,13 +339,11 @@ void cp_no(noeud * n1, noeud * n2);
 void cp_succ(liste_noeud * n, liste_noeud * l){
     liste_noeud * tmp = l;
     liste_noeud * tmpBis = n;
-    while (tmp != NULL)
-    {
+    while (tmp != NULL){
         cp_no(tmpBis->no, tmp->no);
         tmp = tmp->succ;
         tmpBis = tmpBis->succ;
     }
-    
 }
 
 void cp_no(noeud * n1, noeud * n2){
