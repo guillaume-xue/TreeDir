@@ -332,6 +332,18 @@ bool verif_arbo(noeud * n_a_supp, noeud * n_actuel){
 
 // fonction cp chem1 chem2
 
+void cd_cp_valide(char * c){
+    if(have_slash(c)){
+        if(get_last_slash(c) != 0){
+            char * tmp = substr(c, 0, get_last_slash(c));
+            cd_chem(tmp);
+            free(tmp);
+        }else{
+            cd_racine();
+        }
+    }
+}
+
 void cp_no(noeud * n1, noeud * n2);
 
 void cp_succ(liste_noeud * n, liste_noeud * l){
@@ -368,17 +380,7 @@ void cp(char * c1, char * c2){
     }
 
     noeud * curr = n;
-
-    if(have_slash(c1)){
-        if(get_last_slash(c1) != 0){
-            char * tmpOne = substr(c1, 0, get_last_slash(c1));
-            cd_chem(tmpOne);
-            free(tmpOne);
-        }else{
-            cd_racine();
-        }
-    }
-
+    cd_cp_valide(c1);
     char * chem1 = NULL;
     chem1 = get_last_no_name(c1);
     noeud * cp = n;
@@ -391,17 +393,7 @@ void cp(char * c1, char * c2){
     }
 
     n = curr;
-
-    if(have_slash(c2)){
-        if(get_last_slash(c2) != 0){
-            char * tmpOne = substr(c2, 0, get_last_slash(c2));
-            cd_chem(tmpOne);
-            free(tmpOne);
-        }else{
-            cd_racine();
-        }
-    }
-
+    cd_cp_valide(c2);
     char * chem2 = NULL;
     chem2 = get_last_no_name(c2);
     noeud * cl = n;
