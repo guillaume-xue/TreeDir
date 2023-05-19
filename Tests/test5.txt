@@ -7,4 +7,4 @@ touch file111
 print
 cd /Rep2
 cp /Rep1/Rep11 Rep12
-printAux
+print

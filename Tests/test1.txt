@@ -19,4 +19,4 @@ touch file21
 touch file22
 cd /Rep1/Rep11
 ls
-printAux
+print

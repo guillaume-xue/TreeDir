@@ -6,4 +6,4 @@ mkdir Rep11
 cd Rep11
 touch file111
 cp /Rep1 Rep111
-printAux
+print

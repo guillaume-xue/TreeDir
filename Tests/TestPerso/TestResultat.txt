@@ -1,0 +1,32 @@
+test1.txt
+OK
+
+test2.txt (Cas nom égal à "/)
+Chemin avec un format non autorise. (/)
+
+test3.txt (Cas nom égal à "")
+Chemin avec un format non autorise. ("")
+
+test4.txt (Cas chemin finit par un "/")
+Chemin avec un format non autorise. (ProjetJAVA/)
+
+test5.txt (Cas accès chemin inexistant)
+Erreur : Le chemin indique n'est pas accessible depuis le noeud actuel ou n'existe pas. (ProjetJAVA/TP/test)
+
+test6.txt (Cas accès à un fichier)
+Erreur : Le chemin indique n'est pas un dossier. (ProjetJAVA/TP/tp2)
+
+test7.txt (Cas un dossier existe déjà (mkdir))
+Il est existe deja un dossier ou fichier avec ce nom. (TP)
+
+test8.txt (Cas un fichier existe déjà (touch))
+Il est existe deja un dossier ou fichier avec ce nom. (mainjava)
+
+test9.txt (Cas nom non alpha-numérique (touch et mkdir))
+Nom trop long ou caractère non conforme. (ReadMé)
+
+test10.txt (Cas nom trop long >99 caractères (touch et mkdir))
+Nom trop long ou caractère non conforme. (abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ)
+
+test11.txt (Cas fichier ou dossier à supprimer n'est pas accessible)
+L'emplacement à supprimer n'existe pas ou n'est pas accessible depuis le noeud actuel. (td3)

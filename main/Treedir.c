@@ -14,7 +14,7 @@ noeud * n = NULL;
 bool verif_last_case(char * c){
     for (char * i = c; *i != '\0'; i++)
     {
-        if(*i == '/' && *(i+1) == '\0'){
+        if((*i == '/' && *(i+1) == '\0') || (*i == '.' && *(i+1) == '.') || (*i == '"' && *(i+1) == '"')){
             return true;
         }
     }
@@ -82,7 +82,10 @@ noeud * find_noeud(liste_noeud * l, char * c){
 }
 
 void cd_chem(char * c){
-    assert(test_validite_chemin(c) && "Chemin avec un format non autorise.");
+    if(!test_validite_chemin(c)){
+        printf("Chemin avec un format non autorise. (%s)\n", c);
+        assert(false);
+    }
     char * str = dupliquer_char_s(c);
     noeud * res = NULL;
     const char * sep = "/";
@@ -98,9 +101,18 @@ void cd_chem(char * c){
         strTok = strtok(NULL, sep);
     }
     free(str);
-    if(strTok != NULL && res == NULL) assert(false && "Erreur : Le chemin indique n'est pas accessible depuis le noeud actuel.");
-    if(strTok != NULL && res->fils == NULL) assert(false && "Erreur : Le chemin indique n'existe pas.");
-    if(strTok == NULL && !res->est_dossier) assert(false && "Erreur : Le chemin indique n'est pas un dossier.");
+    if(strTok != NULL && res == NULL){
+        printf("Erreur : Le chemin indique n'est pas accessible depuis le noeud actuel ou n'existe pas. (%s)\n",c); 
+        assert(false);
+    } 
+    if(strTok != NULL && res->fils == NULL){
+        printf("Erreur : Le chemin indique n'existe pas. (%s)\n",c); 
+        assert(false);
+    } 
+    if(strTok == NULL && !res->est_dossier){
+        printf("Erreur : Le chemin indique n'est pas un dossier. (%s)\n",c); 
+        assert(false);
+    } 
     n = res;
 }
 
@@ -158,7 +170,12 @@ void creer_fils(noeud * no, char * c, bool b){
     if (no->fils == NULL){
         no->fils = creer_liste_noeud(no, c, b);
     }else{
-        assert(!verif_existe_dupli(no, c) && "Il est existe deja un dossier ou fichier avec ce nom.");
+        if (verif_existe_dupli(no, c))
+        {
+            printf("Il est existe deja un dossier ou fichier avec ce nom. (%s)\n", c); 
+            assert(false);
+        }
+        
         liste_noeud * tmp = no->fils;
         while (tmp->succ != NULL){
             tmp = tmp->succ;
@@ -181,14 +198,22 @@ bool verif_char(char * c){
 }
 
 void mkdir(char * c){
-    assert(verif_char(c) && "Nom trop long ou caractère non conforme.");
+    if (!verif_char(c))
+    {
+        printf("Nom trop long ou caractère non conforme. (%s)\n", c); 
+        assert(false);
+    }
     creer_fils(n, c, true);
 }
 
 // fonction touch
 
 void touch(char * c){
-    assert(verif_char(c) && "Nom trop long ou caractère non conforme.");
+    if (!verif_char(c))
+    {
+        printf("Nom trop long ou caractère non conforme. (%s)\n", c); 
+        assert(false);
+    }
     creer_fils(n, c, false);
 }
 
@@ -257,26 +282,44 @@ void rm_no(noeud * no){
 bool verif_arbo(noeud * n_a_supp, noeud * n_actuel);
 
 void rm(char * c){
-    assert(test_validite_chemin(c) && "Chemin avec un format non autorise.");
-    noeud * tmp = n; // noeud de départ
-    
-    char * tmpOne = dupliquer_char_s(c);
-    cd_chem(tmpOne);
-    free(tmpOne);
+    if(!test_validite_chemin(c)){
+        printf("Chemin avec un format non autorise. (%s)\n",c); 
+        assert(false);
+    }
 
-    noeud * rm = n; // noeud du dossier/fichier à supprimer
+    noeud * tmp = n; // noeud de départ
 
     char * tmpTwo = NULL;
     if(have_slash(c)){
+        if(get_last_slash(c) != 0){
+            char * tmpOne = substr(c, 0, get_last_slash(c)-1);
+            cd_chem(tmpOne);
+            free(tmpOne);
+        }else{
+            cd_racine();
+        }
         tmpTwo = substr(c, get_last_slash(c)+1, strlen(c));
     }else{
         tmpTwo = substr(c, 0, strlen(c));
     }
 
-    assert(verif_arbo(tmp, rm) && "Les deux chemins se superpose (rm)");
+    noeud * rm = n; // noeud du dossier/fichier à supprimer
+    if(tmp != rm){
+        if(!verif_arbo(tmp, rm)){
+            printf("L'emplacement actuel et le chemin indiqué se superposent. (%s)\n",c);
+            assert(false);
+        }
+        
+    }
+    noeud * verifExist = find_noeud(rm->fils, tmpTwo);
+    if(verifExist == NULL){
+        printf("L'emplacement à supprimer n'existe pas ou n'est pas accessible depuis le noeud actuel. (%s)\n",c);
+        assert(false);
+    }
 
-    rm_cut(rm->pere, tmpTwo);
+    rm_cut(rm, tmpTwo);
     free(tmpTwo);
+
 
     n = tmp;
 }

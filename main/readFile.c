@@ -6,7 +6,7 @@
 
 char * dupliquer_char_s(const char * s){
     char* res = (char*)calloc(strlen(s)+1, sizeof(char));
-    strncpy(res, s, strlen(s) + 1);
+    strncpy(res, s, (strlen(s) + 1)*sizeof(char));
     return res;
 }
 
@@ -18,10 +18,11 @@ void make_cmd(char * cmd, char * chem1, char * chem2){
             ls();
         } else if (strcmp(cmd, "pwd") == 0){
             pwd();
-        } else if (strcmp(cmd, "printAux") == 0){
+        } else if (strcmp(cmd, "print") == 0){
             print();
         }else{
-            assert(false && "Commande non trouver.");
+            printf("Commande non trouver. %s\n", cmd);
+            assert(false);
         }
     }else if(chem2 == NULL){
         if (strcmp(cmd, "cd") == 0){
@@ -49,9 +50,9 @@ void make_cmd(char * cmd, char * chem1, char * chem2){
 }
 
 void read_file(FILE * f){
-    char* c = (char*)calloc(100, sizeof(char));
+    char* c = (char*)calloc(300, sizeof(char));
     const char * sep = " \n";
-    char* cBis = fgets(c, 100, f);
+    char* cBis = fgets(c, 300, f);
     while(cBis != NULL){
         if(*c != '\n' && *c != '\0'){
             int count = 0;
@@ -77,7 +78,7 @@ void read_file(FILE * f){
             free(cmd);
             free(strTok);
         }
-        cBis = fgets(c, 100, f);
+        cBis = fgets(c, 300, f);
     }
     free(c);
     free(cBis);

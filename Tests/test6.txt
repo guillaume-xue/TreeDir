@@ -27,5 +27,5 @@ pwd
 ls
 print
 rm /Rep2
-printAux
+print
 

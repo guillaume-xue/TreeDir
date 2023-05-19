@@ -44,7 +44,7 @@ niveau 0 dossier / : 3  fils -> pere
 ====niveau 4 fichier file122 : 0  fils -> pere  Rep12
 ===niveau 3 dossier Rep311 : 0  fils -> pere  Rep31
 --------------------------------------
----------------- printAux ---------------
+---------------- print ---------------
 niveau 0 dossier / : 2  fils -> pere  
 =niveau 1 dossier Rep1 : 2  fils -> pere  
 ==niveau 2 dossier Rep11 : 1  fils -> pere  Rep1

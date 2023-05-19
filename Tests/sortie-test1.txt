@@ -10,7 +10,7 @@ file121 file122
 ----------------- ls -----------------
 file111 
 --------------------------------------
----------------- printAux ---------------
+---------------- print ---------------
 niveau 0 dossier / : 3  fils -> pere  
 =niveau 1 dossier Rep1 : 2  fils -> pere  
 ==niveau 2 dossier Rep11 : 1  fils -> pere  Rep1

@@ -1,0 +1,18 @@
+mkdir ProjetJAVA
+mkdir ProjetC
+touch ReadMe
+cd ProjetJAVA
+mkdir TP
+touch mainjava
+cd TP
+touch tp2
+cd
+cd ProjetC
+mkdir TD
+touch mainc
+cd TD
+touch td3
+cd ..
+ls
+cd
+print
