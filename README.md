@@ -19,3 +19,7 @@ Ce projet est un programme qui simule les instructions système de manipulation 
 ```bath
    make clean
 ```
+
+#### Fait par :
+- Xue Guillaume
+- Yu David
