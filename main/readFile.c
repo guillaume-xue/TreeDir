@@ -18,8 +18,8 @@ void make_cmd(char * cmd, char * chem1, char * chem2){
             ls();
         } else if (strcmp(cmd, "pwd") == 0){
             pwd();
-        } else if (strcmp(cmd, "print") == 0){
-            print1();
+        } else if (strcmp(cmd, "printAux") == 0){
+            print();
         }else{
             assert(false && "Commande non trouver.");
         }

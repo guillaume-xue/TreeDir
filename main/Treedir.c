@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <ctype.h>
 #include "Treedir.h"
 
 // Variable globale
@@ -168,13 +169,26 @@ void creer_fils(noeud * no, char * c, bool b){
 
 // fonction mkdir
 
+bool verif_char(char * c){
+    int lenght = strlen(c);
+    if (lenght > 0 && lenght <= 99){
+        for(int i=0;i<lenght;i++){
+            if(isalnum( c[i] ) == false) return false;
+        }
+        return true;
+    }
+    return false;
+}
+
 void mkdir(char * c){
+    assert(verif_char(c) && "Nom trop long ou caractère non conforme.");
     creer_fils(n, c, true);
 }
 
 // fonction touch
 
 void touch(char * c){
+    assert(verif_char(c) && "Nom trop long ou caractère non conforme.");
     creer_fils(n, c, false);
 }
 
@@ -443,7 +457,7 @@ void mv(char * c1, char * c2){
     // rm(c1);
 }
 
-// fonction print
+// fonction printAux
 
 int nb_fils(liste_noeud * l){
     if (l == NULL) return 0;
@@ -473,21 +487,21 @@ void print_no(noeud * n){
     printf("\n");
 }
 
-void print(noeud * n);
+void printAux(noeud * n);
 
 void print_succ(liste_noeud * l){
-    print(l->no);
+    printAux(l->no);
     if (l->succ != NULL) print_succ(l->succ);
 }
 
-void print(noeud * n){
+void printAux(noeud * n){
     print_no(n);
     if (n->fils != NULL) print_succ(n->fils);
 }
 
-void print1(){
+void print(){
     printf("\n");
-    print(n->racine);
+    printAux(n->racine);
 }
 
 void print_mode_dossier(liste_noeud * tmp, int x);
@@ -507,11 +521,9 @@ void print_mode_dossier(liste_noeud * tmp, int x){
 }
 
 void print_mode_fichier(noeud * n, int x){
-    for (size_t i = 0; i < x; i++)
-    {
+    for (size_t i = 0; i < x; i++){
         printf("--");
     }
-    
     printf("%s", n->nom);
     printf("\n");
 }

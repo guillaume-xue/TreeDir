@@ -12,4 +12,4 @@ touch file21
 print
 pwd
 rm /Rep1
-print
+printAux

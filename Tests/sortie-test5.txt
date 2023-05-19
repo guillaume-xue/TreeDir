@@ -5,7 +5,7 @@ niveau 0 dossier / : 2  fils -> pere
 ===niveau 3 fichier file111 : 0  fils -> pere  Rep11
 =niveau 1 dossier Rep2 : 0  fils -> pere  
 --------------------------------------
----------------- print ---------------
+---------------- printAux ---------------
 niveau 0 dossier / : 2  fils -> pere  
 =niveau 1 dossier Rep1 : 1  fils -> pere  
 ==niveau 2 dossier Rep11 : 1  fils -> pere  Rep1

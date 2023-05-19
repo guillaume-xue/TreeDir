@@ -10,4 +10,4 @@ cp Rep11 /Rep2
 print
 cd
 rm Rep1
-print
+printAux

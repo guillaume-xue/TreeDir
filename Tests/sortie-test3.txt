@@ -10,7 +10,7 @@ niveau 0 dossier / : 2  fils -> pere
 ----------------- pwd ----------------
 /Rep2
 --------------------------------------
----------------- print ---------------
+---------------- printAux ---------------
 niveau 0 dossier / : 1  fils -> pere  
 =niveau 1 dossier Rep2 : 1  fils -> pere  
 ==niveau 2 fichier file21 : 0  fils -> pere  Rep2
