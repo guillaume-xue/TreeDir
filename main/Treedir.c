@@ -13,7 +13,7 @@ noeud * n = NULL;
 
 bool verif_last_case(char * c){
     for (char * i = c; *i != '\0'; i++)
-    {
+    {//Vérifie si le chemin se termine par /, ou contient .. ou ""
         if((*i == '/' && *(i+1) == '\0') || (*i == '.' && *(i+1) == '.') || (*i == '"' && *(i+1) == '"')){
             return true;
         }
@@ -22,9 +22,8 @@ bool verif_last_case(char * c){
 }
 
 bool test_validite_chemin(char * c){
-    //Verifie que la chaine n'est pas vide, ne commence pas par "/" et ne termine pas par "/"
+    //Verifie que la chaine n'est pas vide, ne commence pas par "/" et d'autres conditions
     if(*c == '\0' || verif_last_case(c)){
-        //printf("test %s \n", *c);
         return false;
     }
     return true;
@@ -64,8 +63,9 @@ void cd_pere(){
     n = n->pere;
 }
 
-// fonction cd_chem
 
+
+// permet de couper un char
 char *substr(char * src, int pos, int len) {
     if(len > 0){
         char *dest = calloc(len+1, sizeof(char));
@@ -74,13 +74,14 @@ char *substr(char * src, int pos, int len) {
     }
     return NULL;
 }
-
+// trouve un noeud avec son nom parmis la liste de noeud
 noeud * find_noeud(liste_noeud * l, char * c){
     if (strcmp(l->no->nom, c) == 0) return l->no;
     if (l->succ != NULL) return find_noeud(l->succ, c);
     return NULL;
 }
 
+// fonction cd_chem
 void cd_chem(char * c){
     if(!test_validite_chemin(c)){
         printf("Chemin avec un format non autorise. (%s)\n", c);
@@ -443,7 +444,10 @@ void change_adresse_remove_old(noeud * n1){
 }
 
 void change_adresse_add_new(noeud * n1, noeud * n2){
-    assert(!verif_existe_dupli(n2, n1->nom) && "Il est existe deja un dossier ou fichier avec ce nom. (mv)");
+    if(verif_existe_dupli(n2, n1->nom)){
+        printf("Il est existe deja un dossier ou fichier avec ce nom. (%s)\n", n1->nom);
+        assert(false);
+    }
     liste_noeud * ln = calloc(1, sizeof(liste_noeud));
     ln->no = n1;
     ln->succ = NULL;
@@ -463,8 +467,14 @@ void change_adresse_add_new(noeud * n1, noeud * n2){
 // fonction mv chem1 chem2
 
 void mv(char * c1, char * c2){
-    assert(test_validite_chemin(c1) && "Chemin avec un format non autorise. (mv c1)");
-    assert(test_validite_chemin(c2) && "Chemin avec un format non autorise. (mv c2)");
+    if(!test_validite_chemin(c1)){
+        printf("Chemin avec un format non autorise. (%s)\n",c1); 
+        assert(false);
+    }
+    if(!test_validite_chemin(c2)){
+        printf("Chemin avec un format non autorise. (%s)\n",c2); 
+        assert(false);
+    }
     noeud * res = NULL;
     noeud * res2 = NULL;
     const char * sep = "/";
@@ -472,8 +482,10 @@ void mv(char * c1, char * c2){
     res = n;
     res2 = n;
 
-    char * tmp = substr(c1,0,1);
+    char * tmpc1 = dupliquer_char_s(c1);
+    char * tmpc2 = dupliquer_char_s(c2);
 
+    char * tmp = substr(c1,0,1);
     if (strcmp(tmp, sep) == 0){
         res = n->racine;
     }
@@ -485,7 +497,7 @@ void mv(char * c1, char * c2){
     }
     free(tmp);
 
-    strTok = strtok(c1, sep);
+    strTok = strtok(tmpc1, sep);
     while (strTok != NULL && res->fils != NULL){
         res = find_noeud(res->fils,strTok);
         if(res == NULL){
@@ -499,23 +511,30 @@ void mv(char * c1, char * c2){
         assert(false);
     }
 
-    strTok = strtok(c2, sep);
+    strTok = strtok(tmpc2, sep);
     while (strTok != NULL && res2->fils != NULL){
         res2 = find_noeud(res2->fils,strTok);
         if(res2 == NULL){
-            printf("Ce chemin est innacessible depuis l'emplacement actuel. %s\n", c2);
+            printf("Ce chemin est innacessible depuis l'emplacement actuel. (%s)\n", c2);
             assert(false);
         }
         strTok = strtok(NULL, sep);
     }
-
+    if(!res2->est_dossier){
+        printf("Impossible de copier ici, car le chemin indique un fichier. (%s)\n", c2);
+        assert(false);
+    }
     if(!verif_arbo(res, res2)){
         printf("Impossible de déplace ce dossier car nous sommes actuellement dans un sous-noeud de celle-ci. (%s)\n", c1);
         assert(false);
     }
     change_adresse_add_new(res, res2);
+
+    free(tmpc1);
+    free(tmpc2);
     // cp(c1, c2);
     // rm(c1);
+
 }
 
 // fonction printAux

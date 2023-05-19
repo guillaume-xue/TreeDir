@@ -35,7 +35,8 @@ void make_cmd(char * cmd, char * chem1, char * chem2){
         }else if (strcmp(cmd, "rm") == 0){
             rm(chem1);
         }else{
-            assert(false && "Commande non trouver.");
+            printf("Commande non trouver. %s\n", cmd);
+            assert(false);
         }
     }else{
         if (strcmp(cmd, "cp") == 0){
@@ -43,7 +44,8 @@ void make_cmd(char * cmd, char * chem1, char * chem2){
         } else if (strcmp(cmd, "mv") == 0){
             mv(chem1, chem2);
         } else {
-            assert(false && "Commande non trouver.");
+            printf("Commande non trouver. %s\n", cmd);
+            assert(false);
         }
     }
 

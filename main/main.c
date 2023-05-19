@@ -21,7 +21,7 @@ int main(int argc, char* argv[]){
         read_file(f);
 
         //Permet d'afficher l'arborescence sous forme d'arbre, utile que pour debug.
-        print_mode_arbre(n->racine, 0);
+        //print_mode_arbre(n->racine, 0);
 
         fclose(f);
         fermeture(n->racine);

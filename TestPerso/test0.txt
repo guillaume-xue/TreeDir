@@ -1,15 +1,24 @@
 mkdir projet1
 mkdir projet2
 mkdir projet3
+
 cd projet1
 mkdir prog1
+mkdir prog2
 touch test1
 touch test2
+
 cd prog1
 touch toto
 touch toto2
 mkdir totoFirst
+cd ..
+cd prog2
+touch toto3
+touch toto4
+mkdir totoSecond
 cd
+
 touch edt
 cd projet2
 touch blabla
@@ -21,7 +30,15 @@ touch mmmm2
 touch mmmm3
 cd
 
-cd projet2
-mv /edt blobla
+cd projet3
+touch testtttt
+cd
 
+cd /projet1/prog1
+cd
+mv /projet1 /projet2/blobla
+mv /projet2 projet3
+cp projet3 /projet2
+cd projet2/projet2/blobla/projet1
+rm /projet3/projet2/blobla/projet1
 

@@ -1,3 +1,6 @@
+test0.txt
+OK
+
 test1.txt
 OK
 
