@@ -494,6 +494,11 @@ void mv(char * c1, char * c2){
         }
         strTok = strtok(NULL, sep);
     }
+    if(!verif_arbo(n, res)){
+        printf("Impossible de déplace ce dossier car nous sommes actuellement dans un sous-noeud de celle-ci. (%s)\n", c1);
+        assert(false);
+    }
+
     strTok = strtok(c2, sep);
     while (strTok != NULL && res2->fils != NULL){
         res2 = find_noeud(res2->fils,strTok);
@@ -502,6 +507,11 @@ void mv(char * c1, char * c2){
             assert(false);
         }
         strTok = strtok(NULL, sep);
+    }
+
+    if(!verif_arbo(res, res2)){
+        printf("Impossible de déplace ce dossier car nous sommes actuellement dans un sous-noeud de celle-ci. (%s)\n", c1);
+        assert(false);
     }
     change_adresse_add_new(res, res2);
     // cp(c1, c2);

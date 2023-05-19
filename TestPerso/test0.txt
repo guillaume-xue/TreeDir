@@ -1,0 +1,27 @@
+mkdir projet1
+mkdir projet2
+mkdir projet3
+cd projet1
+mkdir prog1
+touch test1
+touch test2
+cd prog1
+touch toto
+touch toto2
+mkdir totoFirst
+cd
+touch edt
+cd projet2
+touch blabla
+touch blabla2
+mkdir blobla
+cd blobla
+touch mmmm1
+touch mmmm2
+touch mmmm3
+cd
+
+cd projet2
+mv /edt blobla
+
+
