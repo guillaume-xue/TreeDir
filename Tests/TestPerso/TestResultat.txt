@@ -28,5 +28,12 @@ Nom trop long ou caractère non conforme. (ReadMé)
 test10.txt (Cas nom trop long >99 caractères (touch et mkdir))
 Nom trop long ou caractère non conforme. (abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ)
 
-test11.txt (Cas fichier ou dossier à supprimer n'est pas accessible)
+test11.txt (Cas fichier ou dossier à supprimer n'est pas accessible depuis le noeud actuel)
 L'emplacement à supprimer n'existe pas ou n'est pas accessible depuis le noeud actuel. (td3)
+
+test12.txt (Cas où le noeud actuel est dans le dossier ou est le fichier à supprimer)
+L'emplacement actuel et le chemin indiqué se superposent. (/ProjetJAVA)
+
+
+
+

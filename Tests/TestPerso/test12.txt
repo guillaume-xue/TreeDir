@@ -16,5 +16,5 @@ cd ..
 ls
 cd
 print
-cd ProjetC
-rm td3
+cd ProjetJAVA/TP
+rm /ProjetJAVA

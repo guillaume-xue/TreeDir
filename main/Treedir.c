@@ -292,7 +292,7 @@ void rm(char * c){
     char * tmpTwo = NULL;
     if(have_slash(c)){
         if(get_last_slash(c) != 0){
-            char * tmpOne = substr(c, 0, get_last_slash(c)-1);
+            char * tmpOne = substr(c, 0, get_last_slash(c));
             cd_chem(tmpOne);
             free(tmpOne);
         }else{
@@ -304,18 +304,20 @@ void rm(char * c){
     }
 
     noeud * rm = n; // noeud du dossier/fichier à supprimer
-    if(tmp != rm){
-        if(!verif_arbo(tmp, rm)){
-            printf("L'emplacement actuel et le chemin indiqué se superposent. (%s)\n",c);
-            assert(false);
-        }
-        
-    }
+    
     noeud * verifExist = find_noeud(rm->fils, tmpTwo);
     if(verifExist == NULL){
         printf("L'emplacement à supprimer n'existe pas ou n'est pas accessible depuis le noeud actuel. (%s)\n",c);
         assert(false);
     }
+    if(tmp != rm){
+        if(!verif_arbo(tmp, verifExist)){
+            printf("L'emplacement actuel et le chemin indiqué se superposent. (%s)\n",c);
+            assert(false);
+        }
+        
+    }
+    
 
     rm_cut(rm, tmpTwo);
     free(tmpTwo);
