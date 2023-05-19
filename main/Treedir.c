@@ -360,58 +360,81 @@ void cp_no(noeud * n1, noeud * n2){
 }
 
 void cp(char * c1, char * c2){
-    assert(test_validite_chemin(c1) && "Chemin avec un format non autorise. (cp c1)");
-    assert(test_validite_chemin(c2) && "Chemin avec un format non autorise. (cp c2)");
-    noeud * tmp = n;
-    char * tmpOne = NULL;
-    char * tmpTwo = dupliquer_char_s(c1);
-    printf("\ntest 1\n");
-    cd_chem(tmpTwo);
-    free(tmpTwo);
-    printf("\ntest 2\n");
-    noeud * cp = n;
-    n = tmp;
-    
-    
-    tmpTwo = dupliquer_char_s(c2);
-    if(*tmpTwo == '/'){
-        cd_racine();
-        if(get_last_slash(tmpTwo) == 0 && have_slash(tmpTwo)){
-            free(tmpTwo);
-            tmpTwo = NULL;
-            tmpOne = substr(c2,1,strlen(c2)+1);
-        }else{
-            free(tmpTwo);
-            tmpTwo = substr(c2,1,get_last_slash(c2)-1);
-            tmpOne = substr(c2,get_last_slash(c2)+1,strlen(c2)-get_last_slash(c2)+1);
-        } 
-    }else{
-        if(have_slash(tmpTwo)){
-            free(tmpTwo);
-            tmpTwo = substr(c2,0,get_last_slash(c2));
-            tmpOne = substr(c2,get_last_slash(c2)+1,strlen(c2)-get_last_slash(c2)+1);
-        }else{
-            free(tmpTwo);
-            tmpTwo = NULL;
-            tmpOne = substr(c2,0,strlen(c2)+1);      
-        }
-        
+    if(!test_validite_chemin(c1)){
+        printf("Chemin avec un format non autorise. (%s)\n",c1); 
+        assert(false);
     }
-    if(tmpTwo != NULL){
-        printf("\nTest %s\n",tmpTwo);
-        cd_chem(tmpTwo);
+    if(!test_validite_chemin(c2)){
+        printf("Chemin avec un format non autorise. (%s)\n",c2); 
+        assert(false);
     }
-    free(tmpTwo);
-    noeud * cmp = n;
-    assert(verif_arbo(cmp, cp) && "Les deux chemins se superpose (cp)");
-    printf("\ntest 3\n");
-    mkdir(tmpOne);
-    cd_chem(tmpOne);
-    free(tmpOne);
-    printf("\ntest 4\n");
-    noeud * cl = n;
 
-    cp_no(cl, cp);
+    noeud * tmp = n;
+    
+    char * tmpTwo = NULL;
+    if(have_slash(c1)){
+        if(get_last_slash(c1) != 0){
+            char * tmpOne = substr(c1, 0, get_last_slash(c1));
+            cd_chem(tmpOne);
+            free(tmpOne);
+        }else{
+            cd_racine();
+        }
+        tmpTwo = substr(c1, get_last_slash(c1)+1, strlen(c1));
+    }else{
+        tmpTwo = substr(c1, 0, strlen(c1));
+    }
+    noeud * cp = n;
+    noeud * verifExist = find_noeud(cp->fils, tmpTwo);
+    if(verifExist == NULL){
+        printf("L'emplacement à copier n'est pas accessible. (%s)\n",c1);
+        assert(false);
+    }
+
+    n = tmp;
+    free(tmpTwo);
+
+    if(have_slash(c2)){
+        if(get_last_slash(c2) != 0){
+            char * tmpOne = substr(c2, 0, get_last_slash(c2));
+            cd_chem(tmpOne);
+            free(tmpOne);
+        }else{
+            cd_racine();
+        }
+        tmpTwo = substr(c2, get_last_slash(c2)+1, strlen(c2));
+    }else{
+        tmpTwo = substr(c2, 0, strlen(c2));
+    }
+    noeud * cl = n;
+    
+    if(verifExist == cl){
+        printf("L'emplacement du chemin 2 est un sous noeud du chemin 1. (%s), (%s)\n",c1, c2);
+        assert(false);
+    }else{
+        if(!verif_arbo(cl, verifExist)){
+            printf("L'emplacement du chemin 2 est un sous noeud du chemin 1. (%s), (%s)\n",c1, c2);
+            assert(false);
+        }
+    }
+
+    if(verif_existe_dupli(cl, tmpTwo)){
+        printf("Il existe déjà un fichier ou un dossier à ce nom. (%s)\n",c2);
+        assert(false);
+    }
+    
+    if(verifExist->est_dossier){
+        mkdir(tmpTwo);
+        cd_chem(tmpTwo);
+        free(tmpTwo);
+        cl = n;
+        cp_no(cl, verifExist);
+    }else{
+        touch(tmpTwo);
+        free(tmpTwo);
+    }
+    
+    
     n = tmp;
 }
 
@@ -477,13 +500,19 @@ void mv(char * c1, char * c2){
     strTok = strtok(c1, sep);
     while (strTok != NULL && res->fils != NULL){
         res = find_noeud(res->fils,strTok);
-        assert(res != NULL && "Ce chemin est innacessible depuis l'emplacement actuel (mv1)");
+        if(res == NULL){
+            printf("Ce chemin est innacessible depuis l'emplacement actuel. %s\n", c1);
+            assert(false);
+        }
         strTok = strtok(NULL, sep);
     }
     strTok = strtok(c2, sep);
     while (strTok != NULL && res2->fils != NULL){
         res2 = find_noeud(res2->fils,strTok);
-        assert(res2 != NULL && "Ce chemin est innacessible depuis l'emplacement actuel (mv2)");
+        if(res2 == NULL){
+            printf("Ce chemin est innacessible depuis l'emplacement actuel. %s\n", c2);
+            assert(false);
+        }
         strTok = strtok(NULL, sep);
     }
     change_adresse_add_new(res, res2);

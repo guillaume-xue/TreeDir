@@ -34,6 +34,9 @@ L'emplacement à supprimer n'existe pas ou n'est pas accessible depuis le noeud 
 test12.txt (Cas où le noeud actuel est dans le dossier ou est le fichier à supprimer)
 L'emplacement actuel et le chemin indiqué se superposent. (/ProjetJAVA)
 
+test13.txt (Cas où chem2 est un sous noeud de chem1 dans cp)
+L'emplacement du chemin 2 est un sous noeud du chemin 1. (/ProjetJAVA), (/ProjetJAVA/TP/tmp)
+
 
 
 
